@@ -2,249 +2,294 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Maintenance - Blue Core</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYSTEM v65.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* CSS Styling Starts Here */
+        /* --- SAME THEME --- */
         :root {
-            --primary-blue: #00f2ff;
-            --deep-blue: #050a14;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --bg: #000000; --panel: #0a0a0a; --accent: #00f3ff;
+            --text: #ffffff; --user-msg: #002233; --ai-msg: #0f0f0f; --border: #1f1f1f;
+            --code-bg: #050505;
+            --font-head: 'Orbitron', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); font-family: var(--font-mono); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
-        body {
-            background-color: var(--deep-blue);
-            background-image: 
-                radial-gradient(circle at 50% 50%, #0b1e3b 0%, #050a14 100%),
-                linear-gradient(0deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: var(--font-main);
-            color: #fff;
-            overflow: hidden;
-        }
+        /* 4D INTRO */
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: opacity 1s ease; }
+        .glitch-text { font-family: var(--font-head); font-weight: 900; font-size: 2.5rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; text-shadow: 2px 2px 0px #ff0055, -2px -2px 0px #00ff9d; animation: glitch 0.5s infinite alternate; }
+        .sub-text { font-family: var(--font-mono); color: #666; font-size: 0.7rem; margin-top: 15px; letter-spacing: 3px; opacity: 0; animation: fadeIn 2s forwards 1s; }
+        @keyframes glitch { 0% { transform: translate(0); } 100% { transform: translate(2px, -2px); } }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-        .container {
-            text-align: center;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 3rem;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-        }
+        /* LOGIN */
+        #login-screen { position: fixed; width: 100%; height: 100%; background: #000; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .login-box { width: 85%; max-width: 350px; padding: 30px; border: 1px solid var(--accent); border-radius: 8px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.15); background: #050505; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f0f0f; border: 1px solid #333; color: #fff; text-align: center; font-family: var(--font-mono); border-radius: 4px; }
+        .login-btn { width: 100%; padding: 12px; background: var(--accent); color: #000; font-weight: 800; border: none; cursor: pointer; font-family: var(--font-head); border-radius: 4px; font-size: 1.1rem; }
 
-        /* Animated Icon */
-        .icon-box {
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
-        }
+        /* UI */
+        #main-interface { display: none; flex-direction: column; height: 100%; width: 100%; }
+        header { height: 60px; background: var(--panel); border-bottom: 1px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 50; }
+        .brand { font-family: var(--font-head); color: var(--accent); font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; }
+        .menu-btn { font-size: 1.4rem; color: #fff; cursor: pointer; }
 
-        .gear {
-            font-size: 80px;
-            color: var(--primary-blue);
-            animation: spin 4s linear infinite;
-            text-shadow: 0 0 20px var(--primary-blue);
-        }
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        .msg { max-width: 92%; padding: 12px; border-radius: 6px; font-size: 0.9rem; line-height: 1.6; position: relative; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background: var(--user-msg); border-right: 2px solid var(--accent); text-align: right; color: #fff; }
+        .msg.ai { align-self: flex-start; background: var(--ai-msg); border-left: 2px solid var(--accent); color: #e0e0e0; }
+        .meta { font-size: 0.65rem; opacity: 0.7; margin-bottom: 5px; font-weight: bold; color: var(--accent); font-family: var(--font-head); text-transform: uppercase; }
 
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
+        /* CODE BLOCKS */
+        .code-wrapper { margin: 10px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
+        .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 6px 12px; border-bottom: 1px solid #333; }
+        .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
+        .copy-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 2px 8px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; }
+        pre { margin: 0; padding: 12px; overflow-x: auto; }
+        code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
+        
+        /* Formatting */
+        strong { color: #fff; font-weight: 900; }
+        em { color: #aaa; font-style: italic; }
+        h1, h2, h3 { color: var(--accent); margin: 10px 0 5px; border-bottom: 1px solid #333; font-family: var(--font-head); }
+        .inline-code { background: #111; color: #00ff9d; padding: 2px 5px; border-radius: 4px; border: 1px solid #333; font-size: 0.85rem; font-family: 'Consolas', monospace; }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, #fff, var(--primary-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .input-area { background: var(--panel); padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; z-index: 50; }
+        .chat-row { display: flex; width: 100%; gap: 10px; align-items: center; }
+        textarea { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; resize: none; height: 50px; font-family: var(--font-main); font-size: 1rem; }
+        textarea:focus { border-color: var(--accent); }
+        #sendBtn { width: 50px; height: 50px; border-radius: 6px; background: var(--accent); color: #000; border: none; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        p {
-            font-size: 1.1rem;
-            color: #aab2c0;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
+        /* SIDEBAR */
+        #sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0c0c0c; border-right: 1px solid var(--accent); z-index: 200; transition: 0.3s; display: flex; flex-direction: column; }
+        #sidebar.active { left: 0; }
+        .menu-item { padding: 15px; border-bottom: 1px solid #222; color: #aaa; cursor: pointer; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 150; display: none; }
+        #overlay.active { display: block; }
 
-        /* Countdown Box */
-        .timer-box {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .time-unit {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            min-width: 80px;
-            border: 1px solid rgba(0, 242, 255, 0.1);
-        }
-
-        .number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary-blue);
-            display: block;
-        }
-
-        .label {
-            font-size: 0.8rem;
-            color: #888;
-            text-transform: uppercase;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            height: 6px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary-blue);
-            width: 0%; /* JS will animate this */
-            box-shadow: 0 0 10px var(--primary-blue);
-            animation: load 2s infinite ease-in-out;
-        }
-
-        @keyframes load {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-
-        /* Button */
-        .btn {
-            padding: 12px 30px;
-            background: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: var(--primary-blue);
-            color: #000;
-            box-shadow: 0 0 20px var(--primary-blue);
-        }
-
+        #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
+        .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
+        .support-body { flex: 1; padding: 20px; overflow-y: auto; }
+        .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
+        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; }
+        .s-msg.admin { align-self: flex-start; background: #111; }
+        .s-msg.user { align-self: flex-end; background: #002b33; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="icon-box">
-            <!-- Gear Icon using Unicode -->
-            <div class="gear">⚙️</div>
-        </div>
-        
-        <h1>System Update</h1>
-        <p>We are currently fixing some bugs to improve your experience. <br>The system will be back online shortly.</p>
+    <div id="intro-screen">
+        <div class="glitch-text">SYSTEM</div>
+        <div class="sub-text">CREATED BY SHEHZAD / WAHAB</div>
+    </div>
 
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:var(--accent); font-family:var(--font-head); margin-bottom:20px;">IDENTITY</h2>
+            <input type="text" id="userNameInput" class="login-input" placeholder="CODENAME">
+            <input type="text" id="aiNameInput" class="login-input" placeholder="AI NAME">
+            <button class="login-btn" onclick="enterSystem()">ACCESS</button>
         </div>
+    </div>
 
-        <div class="timer-box">
-            <div class="time-unit">
-                <span class="number" id="hours">02</span>
-                <span class="label">Hours</span>
-            </div>
-            <div class="time-unit">
-                <span class="number" id="minutes">00</span>
-                <span class="label">Mins</span>
-            </div>
-            <div class="time-unit">
-                <span class="number" id="seconds">00</span>
-                <span class="label">Secs</span>
+    <div id="sidebar">
+        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
+        <div class="menu-item" onclick="location.reload()"> <i class="fas fa-power-off"></i> Reboot</div>
+        <div class="menu-item" onclick="nukeMemory()" style="color:#ff4444"> <i class="fas fa-trash"></i> Wipe Data</div>
+    </div>
+    <div id="overlay" onclick="toggleMenu()"></div>
+
+    <div id="support-modal">
+        <div class="support-head">
+            <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
+            <i class="fas fa-times" onclick="toggleSupport()" style="color:#fff; cursor:pointer;"></i>
+        </div>
+        <div class="support-body" id="support-msgs"><div class="s-msg admin">Admin Online.</div></div>
+        <div class="support-input">
+            <input type="text" id="support-text" placeholder="Message..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px; outline:none;">
+            <button onclick="sendSupportMsg()" style="background:var(--accent); border:none; padding:0 20px; font-weight:bold;">SEND</button>
+        </div>
+    </div>
+
+    <div id="main-interface">
+        <header>
+            <div class="brand" id="brandTitle">SYSTEM</div>
+            <i class="fas fa-bars menu-btn" style="color:var(--accent);" onclick="toggleMenu()"></i>
+        </header>
+
+        <div id="chat-container"></div>
+
+        <div class="input-area">
+            <div class="chat-row">
+                <textarea id="userInput" placeholder="Execute..."></textarea>
+                <button id="sendBtn" onclick="handleSend()"><i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
-
-        <a href="javascript:location.reload()" class="btn">Check Status</a>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // Kitne ghante ka maintenance hai? (Yahan 2 likha hai)
-        const maintenanceHours = 2; 
-        
-        // --- LOGIC ---
-        
-        // Check if there is already a stored end time
-        let endTime = localStorage.getItem('maintenanceEndTime');
-        const now = new Date().getTime();
+        const SERVER_URL = "https://shehzadplayz.pythonanywhere.com"; 
+        let USER_NAME = "", AI_NAME = "";
+        let currentHistory = [];
 
-        if (!endTime || now > endTime) {
-            // Agar pehli baar khul raha hai ya purana time khatam ho gaya
-            // Toh abhi se 2 ghante aage ka time set karo
-            const duration = maintenanceHours * 60 * 60 * 1000; 
-            endTime = now + duration;
-            localStorage.setItem('maintenanceEndTime', endTime);
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('intro-screen').style.display = 'none';
+                    if(localStorage.getItem('sys_user')) {
+                        USER_NAME = localStorage.getItem('sys_user');
+                        AI_NAME = localStorage.getItem('sys_ai');
+                        startMain();
+                    } else {
+                        document.getElementById('login-screen').style.display = 'flex';
+                    }
+                }, 800);
+            }, 2500);
+        };
+
+        function enterSystem() {
+            USER_NAME = document.getElementById('userNameInput').value.trim().toUpperCase();
+            AI_NAME = document.getElementById('aiNameInput').value.trim().toUpperCase();
+            if(!USER_NAME || !AI_NAME) return alert("Required");
+            localStorage.setItem('sys_user', USER_NAME);
+            localStorage.setItem('sys_ai', AI_NAME);
+            startMain();
         }
 
-        // Timer Update Function
-        const timer = setInterval(function() {
-            const currentTime = new Date().getTime();
-            const distance = endTime - currentTime;
+        function startMain() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-interface').style.display = 'flex';
+            document.getElementById('brandTitle').innerText = AI_NAME;
+            
+            // MEMORY LOADING
+            currentHistory = JSON.parse(localStorage.getItem('sys_hist') || "[]");
+            if(currentHistory.length === 0) addMsg("SYSTEM", `Core Online. Welcome ${USER_NAME}.`);
+            else currentHistory.forEach(m => addMsg(m.role==='user'?'USER':'AI', m.content, false));
+            
+            setInterval(checkSupportMsgs, 4000);
+        }
 
-            // Calculations
-            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const s = Math.floor((distance % (1000 * 60)) / 1000);
+        async function handleSend() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (!text) return;
 
-            // Output result
-            document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
-            document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
-            document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+            addMsg("USER", text);
+            input.value = "";
+            const btn = document.getElementById('sendBtn');
+            btn.disabled = true; btn.style.opacity = "0.5";
 
-            // Fake Progress Bar Movement (Visual Effect)
-            // Progress bar randomly moves between 60% and 90% to show activity
-            const progress = document.getElementById("progressBar");
-            progress.style.width = (60 + Math.random() * 30) + "%";
+            // UPDATE MEMORY
+            currentHistory.push({ role: "user", content: text });
+            localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
 
-            // Agar time khatam ho jaye
-            if (distance < 0) {
-                clearInterval(timer);
-                document.getElementById("hours").innerText = "00";
-                document.getElementById("minutes").innerText = "00";
-                document.getElementById("seconds").innerText = "00";
-                document.querySelector("h1").innerText = "Update Complete";
-                document.querySelector("p").innerText = "Please refresh the page.";
-                localStorage.removeItem('maintenanceEndTime'); // Reset for next time
+            try {
+                const response = await fetch(SERVER_URL + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_name: USER_NAME,
+                        ai_name: AI_NAME,
+                        message: text,
+                        history: currentHistory // Send Full History
+                    })
+                });
+
+                const data = await response.json();
+                addMsg("AI", data.reply);
+                
+                // SAVE REPLY
+                currentHistory.push({ role: "assistant", content: data.reply });
+                localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
+
+            } catch (e) {
+                addMsg("SYSTEM", "Connection Error.");
             }
-        }, 1000);
 
+            btn.disabled = false; btn.style.opacity = "1";
+        }
+
+        // --- FORMATTER ---
+        function formatText(text) {
+            const parts = text.split(/```/g);
+            let finalHtml = "";
+            for (let i = 0; i < parts.length; i++) {
+                let content = parts[i];
+                if (i % 2 === 0) {
+                    content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        .replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>')
+                        .replace(/\n/g, '<br>');
+                    finalHtml += content;
+                } else {
+                    let lang = "CODE";
+                    const firstBreak = content.indexOf('\n');
+                    if (firstBreak > -1 && firstBreak < 15) {
+                        lang = content.substring(0, firstBreak).trim();
+                        content = content.substring(firstBreak + 1);
+                    }
+                    content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    const id = 'c' + Math.random().toString(36).substr(2, 5);
+                    finalHtml += `<div class="code-wrapper"><div class="code-header"><span class="lang-tag">${lang.toUpperCase()}</span><button class="copy-btn" onclick="copyToClipboard('${id}')">COPY</button></div><pre><code id="${id}">${content.trim()}</code></pre></div>`;
+                }
+            }
+            return finalHtml;
+        }
+
+        function addMsg(role, text) {
+            const box = document.getElementById('chat-container');
+            const div = document.createElement('div');
+            div.className = `msg ${role === 'USER' ? 'user' : 'ai'}`;
+            let name = role === 'USER' ? USER_NAME : AI_NAME;
+            if(role === 'SYSTEM') name = "KERNEL";
+            div.innerHTML = `<div class="meta">${name}</div>${formatText(text)}`;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        window.copyToClipboard = function(id) {
+            const text = document.getElementById(id).innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(err => fallbackCopy(text));
+            } else { fallbackCopy(text); }
+        }
+        function fallbackCopy(text) {
+            const ta = document.createElement("textarea");
+            ta.value = text; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); alert("COPIED"); } catch (e) { alert("FAIL"); }
+            document.body.removeChild(ta);
+        }
+
+        // Support & Menu
+        async function sendSupportMsg() {
+            const t = document.getElementById('support-text').value.trim();
+            if(!t) return;
+            document.getElementById('support-msgs').innerHTML += `<div style="text-align:right; margin:5px; color:#00f3ff;">${t}</div>`;
+            document.getElementById('support-text').value = "";
+            await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
+        }
+        async function checkSupportMsgs() {
+            try {
+                const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
+                const msgs = await res.json();
+                const box = document.getElementById('support-msgs');
+                let h = '<div class="s-msg admin">Connected.</div>';
+                msgs.forEach(m=>{h+=`<div class="s-msg ${m.sender}">${m.text}</div>`});
+                if(box.innerHTML !== h) box.innerHTML = h;
+            } catch(e){}
+        }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+        function toggleSupport() { document.getElementById('support-modal').style.display = document.getElementById('support-modal').style.display === 'flex' ? 'none' : 'flex'; toggleMenu(); }
+        function nukeMemory() { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
