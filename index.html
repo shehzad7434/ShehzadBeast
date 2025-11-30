@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>SYSTEM v76.0 [COMPACT]</title>
+    <title>SYSTEM v77.0 [UPDATE]</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
     
@@ -131,7 +131,7 @@
         pre { margin: 0; padding: 10px; overflow-x: auto; }
         code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
 
-        /* --- COMPACT INPUT AREA (THE FIX) --- */
+        /* COMPACT INPUT AREA */
         .input-area {
             background: var(--panel); 
             padding: 8px 10px; 
@@ -167,10 +167,10 @@
         #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
         .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
         .support-body { flex: 1; padding: 20px; overflow-y: auto; }
-        .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
         .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; word-wrap: break-word; }
         .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
         .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
+        .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
 
         /* PREVIEW MODAL */
         #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 1000; display: none; flex-direction: column; }
@@ -209,7 +209,7 @@
 
     <div id="sidebar">
         <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
-        <div class="menu-item" onclick="location.reload()"> <i class="fas fa-power-off"></i> Reboot</div>
+        <div class="menu-item" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</div>
         <div class="menu-item" onclick="nukeMemory()" style="color:#ff4444"> <i class="fas fa-trash"></i> Wipe Data</div>
     </div>
     <div id="overlay" onclick="toggleMenu()"></div>
@@ -258,12 +258,15 @@
         let USER_NAME = "", AI_NAME = "";
         let currentHistory = [];
 
+        // --- SMART BOOT CHECK ---
         window.onload = () => {
+            checkForUpdates(); // Version check
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 setTimeout(() => {
                     document.getElementById('intro-screen').style.display = 'none';
                     if(localStorage.getItem('sys_user')) {
+                        // Auto Login
                         USER_NAME = localStorage.getItem('sys_user');
                         AI_NAME = localStorage.getItem('sys_ai');
                         startMain();
@@ -272,7 +275,27 @@
                     }
                 }, 800);
             }, 2500);
+
+            // Resume check on app switch
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') checkForUpdates();
+            });
         };
+
+        async function checkForUpdates() {
+            const currentHash = localStorage.getItem('site_hash');
+            try {
+                const response = await fetch(window.location.href, { cache: 'no-store' });
+                const text = await response.text();
+                const newHash = text.length.toString();
+                if (currentHash && currentHash !== newHash) {
+                    localStorage.setItem('site_hash', newHash);
+                    window.location.reload();
+                } else {
+                    localStorage.setItem('site_hash', newHash);
+                }
+            } catch (e) {}
+        }
 
         function toggleAuth() { document.getElementById('authContainer').classList.toggle('flipped'); }
 
@@ -308,6 +331,8 @@
             document.getElementById('auth-wrapper').style.display = 'none';
             startMain();
         }
+
+        function logout() { localStorage.clear(); location.reload(); }
 
         function startMain() {
             document.getElementById('auth-wrapper').style.display = 'none';
@@ -358,13 +383,13 @@
             btn.disabled = false; btn.style.opacity = "1";
         }
 
+        // --- FORMATTER ---
         function formatText(text) {
             const parts = text.split(/```/g);
             let finalHtml = "";
 
             for (let i = 0; i < parts.length; i++) {
                 let content = parts[i];
-
                 if (i % 2 === 0) {
                     content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -397,8 +422,7 @@
                             </div>
                             <pre><code id="${id}">${safeContent}</code></pre>
                             <textarea id="${id}_raw" style="display:none;">${rawContent}</textarea>
-                        </div>
-                    `;
+                        </div>`;
                 }
             }
             return finalHtml;
@@ -431,6 +455,7 @@
         }
         window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
 
+        // Support
         async function sendSupportMsg() {
             const t = document.getElementById('support-text').value.trim();
             if(!t) return;
@@ -443,7 +468,7 @@
                 const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
                 const msgs = await res.json();
                 const box = document.getElementById('support-msgs');
-                let h = '<div class="s-msg admin">Connected.</div>';
+                let h = '<div class="s-msg admin">Admin Online.</div>';
                 msgs.forEach(m=>{
                     let style = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
                     h+=`<div class="${style}">${m.text}</div>`;
