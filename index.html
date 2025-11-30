@@ -2,69 +2,162 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM v65.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>SYSTEM v76.0 [COMPACT]</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- SAME THEME --- */
+        /* --- THEME: RGB DARK --- */
         :root {
-            --bg: #000000; --panel: #0a0a0a; --accent: #00f3ff;
-            --text: #ffffff; --user-msg: #002233; --ai-msg: #0f0f0f; --border: #1f1f1f;
-            --code-bg: #050505;
-            --font-head: 'Orbitron', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+            --bg: #000000; --panel: #050505; --accent: #00f3ff;
+            --text: #ffffff; --user-msg: #001a1a; --ai-msg: #0a0a0a; --border: #1f1f1f;
+            --code-bg: #080808;
+            --font-head: 'Rajdhani', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg); color: var(--text); font-family: var(--font-mono); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
+        /* --- ANIMATIONS --- */
+        @keyframes rainbow {
+            0% { border-color: #ff0000; box-shadow: 0 2px 10px rgba(255,0,0,0.2); }
+            20% { border-color: #ffff00; box-shadow: 0 2px 10px rgba(255,255,0,0.2); }
+            40% { border-color: #00ff00; box-shadow: 0 2px 10px rgba(0,255,0,0.2); }
+            60% { border-color: #00ffff; box-shadow: 0 2px 10px rgba(0,255,255,0.2); }
+            80% { border-color: #0000ff; box-shadow: 0 2px 10px rgba(0,0,255,0.2); }
+            100% { border-color: #ff00ff; box-shadow: 0 2px 10px rgba(255,0,255,0.2); }
+        }
+
         /* 4D INTRO */
-        #intro-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: opacity 1s ease; }
-        .glitch-text { font-family: var(--font-head); font-weight: 900; font-size: 2.5rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; text-shadow: 2px 2px 0px #ff0055, -2px -2px 0px #00ff9d; animation: glitch 0.5s infinite alternate; }
-        .sub-text { font-family: var(--font-mono); color: #666; font-size: 0.7rem; margin-top: 15px; letter-spacing: 3px; opacity: 0; animation: fadeIn 2s forwards 1s; }
-        @keyframes glitch { 0% { transform: translate(0); } 100% { transform: translate(2px, -2px); } }
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform-style: preserve-3d; transition: opacity 1s ease;
+        }
+        .glitch-text {
+            font-family: var(--font-head); font-weight: 900; font-size: 2.5rem;
+            color: var(--accent); letter-spacing: 4px; text-transform: uppercase;
+            text-shadow: 2px 2px 0px #ff0055, -2px -2px 0px #00ff9d;
+            animation: glitch 0.5s infinite alternate;
+        }
+        .sub-text {
+            font-family: var(--font-mono); color: #666; font-size: 0.7rem;
+            margin-top: 15px; letter-spacing: 3px; opacity: 0;
+            animation: fadeIn 2s forwards 1s;
+        }
+        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* LOGIN */
-        #login-screen { position: fixed; width: 100%; height: 100%; background: #000; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { width: 85%; max-width: 350px; padding: 30px; border: 1px solid var(--accent); border-radius: 8px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.15); background: #050505; }
-        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f0f0f; border: 1px solid #333; color: #fff; text-align: center; font-family: var(--font-mono); border-radius: 4px; }
-        .login-btn { width: 100%; padding: 12px; background: var(--accent); color: #000; font-weight: 800; border: none; cursor: pointer; font-family: var(--font-head); border-radius: 4px; font-size: 1.1rem; }
+        /* AUTH SYSTEM */
+        #auth-wrapper {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 500; display: none;
+            perspective: 1000px; align-items: center; justify-content: center;
+        }
+        .auth-container { width: 320px; height: 450px; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
+        .auth-container.flipped { transform: rotateY(180deg); }
+        .auth-card {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            background: var(--panel); border: 1px solid var(--accent);
+            border-radius: 10px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+        }
+        .auth-card.back { transform: rotateY(180deg); }
+        .auth-title { font-family: var(--font-head); font-size: 2rem; color: var(--accent); margin-bottom: 20px; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: var(--font-mono); border-radius: 4px; font-size: 1rem; }
+        .auth-input:focus { border-color: var(--accent); }
+        .auth-btn { width: 100%; padding: 12px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; font-family: var(--font-head); border-radius: 4px; font-size: 1.2rem; margin-top: 10px; }
+        .switch-text { margin-top: 20px; font-size: 0.8rem; color: #888; cursor: pointer; text-decoration: underline; }
 
-        /* UI */
+        /* MAIN UI */
         #main-interface { display: none; flex-direction: column; height: 100%; width: 100%; }
-        header { height: 60px; background: var(--panel); border-bottom: 1px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 50; }
-        .brand { font-family: var(--font-head); color: var(--accent); font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; }
+        
+        /* RAINBOW HEADER */
+        header {
+            height: 60px; background: var(--panel);
+            border-bottom: 2px solid var(--accent);
+            animation: rainbow 5s infinite linear;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 50;
+        }
+        
+        .brand-group { display: flex; flex-direction: column; }
+        .brand { font-family: var(--font-head); color: var(--accent); font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; line-height: 1; }
+        .credits { font-size: 0.6rem; color: #fff; font-weight: bold; text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; text-shadow: 0 0 5px var(--accent); }
         .menu-btn { font-size: 1.4rem; color: #fff; cursor: pointer; }
 
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 92%; padding: 12px; border-radius: 6px; font-size: 0.9rem; line-height: 1.6; position: relative; word-wrap: break-word; }
-        .msg.user { align-self: flex-end; background: var(--user-msg); border-right: 2px solid var(--accent); text-align: right; color: #fff; }
-        .msg.ai { align-self: flex-start; background: var(--ai-msg); border-left: 2px solid var(--accent); color: #e0e0e0; }
-        .meta { font-size: 0.65rem; opacity: 0.7; margin-bottom: 5px; font-weight: bold; color: var(--accent); font-family: var(--font-head); text-transform: uppercase; }
-
-        /* CODE BLOCKS */
-        .code-wrapper { margin: 10px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
-        .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 6px 12px; border-bottom: 1px solid #333; }
-        .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
-        .copy-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 2px 8px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; }
-        pre { margin: 0; padding: 12px; overflow-x: auto; }
-        code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
+        /* CHAT AREA */
+        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         
-        /* Formatting */
+        .msg {
+            max-width: 92%; padding: 10px 14px; border-radius: 8px;
+            font-size: 0.9rem; line-height: 1.5; position: relative; word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg.user {
+            align-self: flex-end; background: var(--user-msg);
+            border-right: 2px solid var(--accent); text-align: right; color: #fff;
+        }
+        .msg.ai {
+            align-self: flex-start; background: var(--ai-msg);
+            border-left: 2px solid var(--accent); color: #e0e0e0;
+        }
+        .meta { font-size: 0.65rem; opacity: 0.7; margin-bottom: 4px; font-weight: bold; color: var(--accent); font-family: var(--font-head); text-transform: uppercase; }
+
+        /* SYNTAX CLEANER STYLES */
+        h1, h2, h3 { margin: 8px 0 4px 0; color: var(--accent); font-family: var(--font-head); border-bottom: 1px solid #333; }
+        h1 { font-size: 1.2rem; } h2 { font-size: 1.1rem; } h3 { font-size: 1rem; }
         strong { color: #fff; font-weight: 900; }
         em { color: #aaa; font-style: italic; }
-        h1, h2, h3 { color: var(--accent); margin: 10px 0 5px; border-bottom: 1px solid #333; font-family: var(--font-head); }
-        .inline-code { background: #111; color: #00ff9d; padding: 2px 5px; border-radius: 4px; border: 1px solid #333; font-size: 0.85rem; font-family: 'Consolas', monospace; }
+        ul { margin: 5px 0 5px 20px; padding: 0; }
+        li { margin-bottom: 2px; }
+        .inline-code { background: #1a1a1a; color: #00ff9d; padding: 1px 4px; border-radius: 3px; font-size: 0.85rem; font-family: 'Consolas', monospace; border: 1px solid #333; }
 
-        .input-area { background: var(--panel); padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; z-index: 50; }
-        .chat-row { display: flex; width: 100%; gap: 10px; align-items: center; }
-        textarea { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; resize: none; height: 50px; font-family: var(--font-main); font-size: 1rem; }
+        /* CODE BLOCK RUNNER */
+        .code-wrapper { margin: 8px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
+        .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 5px 10px; border-bottom: 1px solid #333; }
+        .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
+        
+        .btn-group { display: flex; gap: 8px; }
+        .action-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 2px 8px; font-size: 0.65rem; cursor: pointer; border-radius: 3px; font-weight: bold; }
+        .action-btn:active { background: var(--accent); color: #000; }
+        .run-btn { border-color: #00ff88; color: #00ff88; }
+        .run-btn:active { background: #00ff88; color: #000; }
+
+        pre { margin: 0; padding: 10px; overflow-x: auto; }
+        code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
+
+        /* --- COMPACT INPUT AREA (THE FIX) --- */
+        .input-area {
+            background: var(--panel); 
+            padding: 8px 10px; 
+            border-top: 1px solid var(--border);
+            display: flex; gap: 8px; align-items: center;
+            z-index: 50;
+        }
+        .chat-row { display: flex; width: 100%; gap: 8px; align-items: center; }
+        
+        textarea {
+            flex: 1; background: #000; border: 1px solid #333; color: #fff;
+            padding: 8px 12px; border-radius: 20px; 
+            resize: none; 
+            height: 40px; /* COMPACT HEIGHT */
+            font-family: var(--font-mono); font-size: 0.9rem;
+        }
         textarea:focus { border-color: var(--accent); }
-        #sendBtn { width: 50px; height: 50px; border-radius: 6px; background: var(--accent); color: #000; border: none; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
+        #sendBtn {
+            width: 40px; height: 40px; /* COMPACT BUTTON */
+            border-radius: 50%; background: var(--accent); color: #000;
+            border: none; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
 
-        /* SIDEBAR */
+        /* SIDEBAR & MODALS */
         #sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0c0c0c; border-right: 1px solid var(--accent); z-index: 200; transition: 0.3s; display: flex; flex-direction: column; }
         #sidebar.active { left: 0; }
         .menu-item { padding: 15px; border-bottom: 1px solid #222; color: #aaa; cursor: pointer; }
@@ -75,9 +168,16 @@
         .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
         .support-body { flex: 1; padding: 20px; overflow-y: auto; }
         .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
-        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; }
-        .s-msg.admin { align-self: flex-start; background: #111; }
-        .s-msg.user { align-self: flex-end; background: #002b33; }
+        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; word-wrap: break-word; }
+        .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
+        .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
+
+        /* PREVIEW MODAL */
+        #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 1000; display: none; flex-direction: column; }
+        .preview-header { height: 50px; background: #222; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid #444; }
+        .preview-title { color: #fff; font-family: var(--font-head); font-weight: bold; }
+        .close-preview-btn { background: #ff0055; color: white; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        #preview-frame { flex: 1; border: none; width: 100%; background: #fff; }
     </style>
 </head>
 <body>
@@ -87,12 +187,23 @@
         <div class="sub-text">CREATED BY SHEHZAD / WAHAB</div>
     </div>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="color:var(--accent); font-family:var(--font-head); margin-bottom:20px;">IDENTITY</h2>
-            <input type="text" id="userNameInput" class="login-input" placeholder="CODENAME">
-            <input type="text" id="aiNameInput" class="login-input" placeholder="AI NAME">
-            <button class="login-btn" onclick="enterSystem()">ACCESS</button>
+    <div id="auth-wrapper">
+        <div class="auth-container" id="authContainer">
+            <div class="auth-card front">
+                <div class="auth-title">LOGIN</div>
+                <input type="text" id="loginUser" class="auth-input" placeholder="USERNAME">
+                <input type="password" id="loginPass" class="auth-input" placeholder="PASSWORD">
+                <button class="auth-btn" onclick="handleLogin()">ACCESS</button>
+                <div class="switch-text" onclick="toggleAuth()">Create New Account</div>
+            </div>
+            <div class="auth-card back">
+                <div class="auth-title">NEW USER</div>
+                <input type="text" id="signUser" class="auth-input" placeholder="SET USERNAME">
+                <input type="password" id="signPass" class="auth-input" placeholder="SET PASSWORD">
+                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME (e.g. VENOM)">
+                <button class="auth-btn" onclick="handleSignup()">INITIALIZE</button>
+                <div class="switch-text" onclick="toggleAuth()">Back to Login</div>
+            </div>
         </div>
     </div>
 
@@ -115,9 +226,20 @@
         </div>
     </div>
 
+    <div id="preview-modal">
+        <div class="preview-header">
+            <span class="preview-title">LIVE PREVIEW (html only)</span>
+            <button class="close-preview-btn" onclick="closePreview()">CLOSE</button>
+        </div>
+        <iframe id="preview-frame"></iframe>
+    </div>
+
     <div id="main-interface">
         <header>
-            <div class="brand" id="brandTitle">SYSTEM</div>
+            <div class="brand-group">
+                <div class="brand" id="brandTitle">SYSTEM</div>
+                <div class="credits">CREATED BY SHEHZAD & WAHAB</div>
+            </div>
             <i class="fas fa-bars menu-btn" style="color:var(--accent);" onclick="toggleMenu()"></i>
         </header>
 
@@ -146,27 +268,52 @@
                         AI_NAME = localStorage.getItem('sys_ai');
                         startMain();
                     } else {
-                        document.getElementById('login-screen').style.display = 'flex';
+                        document.getElementById('auth-wrapper').style.display = 'flex';
                     }
                 }, 800);
             }, 2500);
         };
 
-        function enterSystem() {
-            USER_NAME = document.getElementById('userNameInput').value.trim().toUpperCase();
-            AI_NAME = document.getElementById('aiNameInput').value.trim().toUpperCase();
-            if(!USER_NAME || !AI_NAME) return alert("Required");
-            localStorage.setItem('sys_user', USER_NAME);
-            localStorage.setItem('sys_ai', AI_NAME);
+        function toggleAuth() { document.getElementById('authContainer').classList.toggle('flipped'); }
+
+        async function handleSignup() {
+            const u = document.getElementById('signUser').value.trim(), p = document.getElementById('signPass').value.trim(), a = document.getElementById('signAi').value.trim();
+            if(!u || !p || !a) return alert("Fill all");
+            try {
+                const r = await fetch(SERVER_URL + '/api/auth', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ mode: 'signup', username: u, password: p, ai_name: a })
+                });
+                const d = await r.json();
+                if(d.status==='success') loginSuccess(u,a); else alert(d.message);
+            } catch(e){alert("Error");}
+        }
+
+        async function handleLogin() {
+            const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value.trim();
+            if(!u || !p) return alert("Fill all");
+            try {
+                const r = await fetch(SERVER_URL + '/api/auth', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ mode: 'login', username: u, password: p })
+                });
+                const d = await r.json();
+                if(d.status==='success') loginSuccess(u,d.ai_name); else alert(d.message);
+            } catch(e){alert("Error");}
+        }
+
+        function loginSuccess(u,a) {
+            USER_NAME = u.toUpperCase(); AI_NAME = a.toUpperCase();
+            localStorage.setItem('sys_user', USER_NAME); localStorage.setItem('sys_ai', AI_NAME);
+            document.getElementById('auth-wrapper').style.display = 'none';
             startMain();
         }
 
         function startMain() {
-            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('auth-wrapper').style.display = 'none';
             document.getElementById('main-interface').style.display = 'flex';
             document.getElementById('brandTitle').innerText = AI_NAME;
             
-            // MEMORY LOADING
             currentHistory = JSON.parse(localStorage.getItem('sys_hist') || "[]");
             if(currentHistory.length === 0) addMsg("SYSTEM", `Core Online. Welcome ${USER_NAME}.`);
             else currentHistory.forEach(m => addMsg(m.role==='user'?'USER':'AI', m.content, false));
@@ -184,7 +331,6 @@
             const btn = document.getElementById('sendBtn');
             btn.disabled = true; btn.style.opacity = "0.5";
 
-            // UPDATE MEMORY
             currentHistory.push({ role: "user", content: text });
             localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
 
@@ -196,14 +342,12 @@
                         user_name: USER_NAME,
                         ai_name: AI_NAME,
                         message: text,
-                        history: currentHistory // Send Full History
+                        history: currentHistory
                     })
                 });
 
                 const data = await response.json();
                 addMsg("AI", data.reply);
-                
-                // SAVE REPLY
                 currentHistory.push({ role: "assistant", content: data.reply });
                 localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
 
@@ -214,12 +358,13 @@
             btn.disabled = false; btn.style.opacity = "1";
         }
 
-        // --- FORMATTER ---
         function formatText(text) {
             const parts = text.split(/```/g);
             let finalHtml = "";
+
             for (let i = 0; i < parts.length; i++) {
                 let content = parts[i];
+
                 if (i % 2 === 0) {
                     content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -237,9 +382,23 @@
                         lang = content.substring(0, firstBreak).trim();
                         content = content.substring(firstBreak + 1);
                     }
-                    content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    const rawContent = content.trim();
+                    const safeContent = rawContent.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                     const id = 'c' + Math.random().toString(36).substr(2, 5);
-                    finalHtml += `<div class="code-wrapper"><div class="code-header"><span class="lang-tag">${lang.toUpperCase()}</span><button class="copy-btn" onclick="copyToClipboard('${id}')">COPY</button></div><pre><code id="${id}">${content.trim()}</code></pre></div>`;
+                    
+                    finalHtml += `
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span class="lang-tag">${lang.toUpperCase()}</span>
+                                <div class="btn-group">
+                                    <button class="action-btn run-btn" onclick="runCode('${id}')">RUN</button>
+                                    <button class="action-btn" onclick="copyToClipboard('${id}')">COPY</button>
+                                </div>
+                            </div>
+                            <pre><code id="${id}">${safeContent}</code></pre>
+                            <textarea id="${id}_raw" style="display:none;">${rawContent}</textarea>
+                        </div>
+                    `;
                 }
             }
             return finalHtml;
@@ -257,23 +416,25 @@
         }
 
         window.copyToClipboard = function(id) {
-            const text = document.getElementById(id).innerText;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(err => fallbackCopy(text));
-            } else { fallbackCopy(text); }
+            const text = document.getElementById(id+"_raw").value;
+            navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(()=>fallbackCopy(text));
         }
         function fallbackCopy(text) {
-            const ta = document.createElement("textarea");
-            ta.value = text; document.body.appendChild(ta); ta.select();
-            try { document.execCommand('copy'); alert("COPIED"); } catch (e) { alert("FAIL"); }
-            document.body.removeChild(ta);
+            const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+            try { document.execCommand('copy'); alert("COPIED"); } catch (e) {} document.body.removeChild(t);
         }
+        window.runCode = function(id) {
+            const code = document.getElementById(id+"_raw").value;
+            document.getElementById('preview-modal').style.display = 'flex';
+            const doc = document.getElementById('preview-frame').contentWindow.document;
+            doc.open(); doc.write(code); doc.close();
+        }
+        window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
 
-        // Support & Menu
         async function sendSupportMsg() {
             const t = document.getElementById('support-text').value.trim();
             if(!t) return;
-            document.getElementById('support-msgs').innerHTML += `<div style="text-align:right; margin:5px; color:#00f3ff;">${t}</div>`;
+            document.getElementById('support-msgs').innerHTML += `<div class="s-msg user">${t}</div>`;
             document.getElementById('support-text').value = "";
             await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
         }
@@ -283,8 +444,11 @@
                 const msgs = await res.json();
                 const box = document.getElementById('support-msgs');
                 let h = '<div class="s-msg admin">Connected.</div>';
-                msgs.forEach(m=>{h+=`<div class="s-msg ${m.sender}">${m.text}</div>`});
-                if(box.innerHTML !== h) box.innerHTML = h;
+                msgs.forEach(m=>{
+                    let style = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
+                    h+=`<div class="${style}">${m.text}</div>`;
+                });
+                if(box.innerHTML !== h) { box.innerHTML = h; box.scrollTop = box.scrollHeight; }
             } catch(e){}
         }
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
