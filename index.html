@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM v81.0 [FINAL]</title>
+    <title>SYSTEM v82.0 [FIXED]</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
     
@@ -85,10 +85,16 @@
         .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
         .btn-group { display: flex; gap: 10px; }
         .action-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .action-btn:active { background: var(--accent); color: #000; }
         .run-btn { border-color: #00ff88; color: #00ff88; }
+        
         pre { margin: 0; padding: 12px; overflow-x: auto; }
         code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
         
+        strong { color: #fff; font-weight: 900; } em { color: #aaa; font-style: italic; }
+        h1, h2, h3 { color: var(--accent); margin: 10px 0 5px; border-bottom: 1px solid #333; font-family: var(--font-head); }
+        .inline-code { background: #111; color: #00ff9d; padding: 2px 5px; border-radius: 4px; border: 1px solid #333; font-size: 0.85rem; font-family: 'Consolas', monospace; }
+
         /* INPUT AREA */
         .input-area { background: var(--panel); padding: 8px 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; z-index: 50; }
         .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--accent); background: transparent; color: var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -105,15 +111,12 @@
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 150; display: none; }
         #overlay.active { display: block; }
 
-        /* SUPPORT MODAL FIXED */
         #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
         .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
-        .support-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        
-        .s-msg { padding: 10px; border-radius: 6px; max-width: 80%; word-wrap: break-word; font-size: 0.9rem; }
+        .support-body { flex: 1; padding: 20px; overflow-y: auto; }
+        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; word-wrap: break-word; }
         .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
         .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
-        
         .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
 
         /* PREVIEW MODAL */
@@ -131,7 +134,6 @@
         <div class="sub-text">CREATED BY SHEHZAD / WAHAB</div>
     </div>
 
-    <!-- AUTH -->
     <div id="auth-wrapper">
         <div class="auth-container" id="authContainer">
             <div class="auth-card front">
@@ -145,22 +147,20 @@
                 <div class="auth-title">NEW USER</div>
                 <input type="text" id="signUser" class="auth-input" placeholder="SET USERNAME">
                 <input type="password" id="signPass" class="auth-input" placeholder="SET PASSWORD">
-                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME">
+                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME (e.g. VENOM)">
                 <button class="auth-btn" onclick="handleSignup()">INITIALIZE</button>
                 <div class="switch-text" onclick="toggleAuth()">Back to Login</div>
             </div>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
     <div id="sidebar">
-        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support Chat</div>
+        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
         <div class="menu-item" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</div>
         <div class="menu-item" onclick="nukeMemory()" style="color:#ff4444"> <i class="fas fa-trash"></i> Wipe Data</div>
     </div>
     <div id="overlay" onclick="toggleMenu()"></div>
 
-    <!-- SUPPORT MODAL -->
     <div id="support-modal">
         <div class="support-head">
             <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
@@ -173,7 +173,6 @@
         </div>
     </div>
 
-    <!-- PREVIEW -->
     <div id="preview-modal">
         <div class="preview-header">
             <span class="preview-title">LIVE PREVIEW</span>
@@ -182,7 +181,6 @@
         <iframe id="preview-frame"></iframe>
     </div>
 
-    <!-- MAIN UI -->
     <div id="main-interface">
         <header>
             <div class="brand-group">
@@ -210,9 +208,8 @@
         let currentHistory = [];
         let selectedImage = null;
 
-        // --- AUTO UPDATE CHECK ---
         window.onload = () => {
-            checkForUpdates();
+            checkForUpdates(); // AUTO UPDATE CHECK ON LOAD
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 setTimeout(() => {
@@ -227,9 +224,12 @@
                     }
                 }, 800);
             }, 2500);
+
+            // AUTO UPDATE ON VISIBILITY CHANGE
             document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible') checkForUpdates(); });
         };
 
+        // --- AUTO UPDATE LOGIC ---
         async function checkForUpdates() {
             try {
                 const res = await fetch(window.location.href, { cache: 'no-store' });
@@ -337,6 +337,7 @@
 
         // --- FORMATTER ---
         function formatText(text) {
+            if(!text) return "";
             const parts = text.split(/```/g);
             let finalHtml = "";
             for (let i = 0; i < parts.length; i++) {
@@ -367,7 +368,7 @@
             return finalHtml;
         }
 
-        function addMsg(role, text, img=null, animate=true) {
+        function addMsg(role, text, img=null) {
             const box = document.getElementById('chat-container');
             const div = document.createElement('div');
             div.className = `msg ${role === 'USER' ? 'user' : 'ai'}`;
@@ -383,7 +384,6 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // --- UTILS ---
         window.copyToClipboard = function(id) {
             const text = document.getElementById(id+"_raw").value;
             navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(()=>fallbackCopy(text));
@@ -400,20 +400,16 @@
         }
         window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
 
-        // --- SUPPORT (FIXED SYNC) ---
+        // SUPPORT FIXED
         async function sendSupportMsg() {
             const t = document.getElementById('support-text').value.trim();
             if(!t) return;
-            // UI Add
             document.getElementById('support-msgs').innerHTML += `<div class="s-msg user">${t}</div>`;
             const box = document.getElementById('support-msgs'); box.scrollTop = box.scrollHeight;
             document.getElementById('support-text').value = "";
-            
             await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
         }
-
         async function checkSupportMsgs() {
-            if(!USER_NAME) return;
             try {
                 const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
                 const msgs = await res.json();
@@ -425,8 +421,6 @@
                     html += `<div class="${cls}">${m.text}</div>`;
                 });
                 
-                // Update only if new messages to avoid flicker
-                // Simplified: Check length or just update
                 if(box.innerHTML !== html) {
                     box.innerHTML = html;
                     box.scrollTop = box.scrollHeight;
