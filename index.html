@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM v82.0 [FIXED]</title>
+    <title>SYSTEM v90.0 [GOD]</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
     
@@ -83,6 +83,7 @@
         .code-wrapper { margin: 10px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
         .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 6px 12px; border-bottom: 1px solid #333; }
         .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
+        
         .btn-group { display: flex; gap: 10px; }
         .action-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .action-btn:active { background: var(--accent); color: #000; }
@@ -113,8 +114,8 @@
 
         #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
         .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
-        .support-body { flex: 1; padding: 20px; overflow-y: auto; }
-        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; word-wrap: break-word; }
+        .support-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; word-wrap: break-word; }
         .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
         .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
         .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
@@ -134,6 +135,7 @@
         <div class="sub-text">CREATED BY SHEHZAD / WAHAB</div>
     </div>
 
+    <!-- AUTH -->
     <div id="auth-wrapper">
         <div class="auth-container" id="authContainer">
             <div class="auth-card front">
@@ -147,13 +149,14 @@
                 <div class="auth-title">NEW USER</div>
                 <input type="text" id="signUser" class="auth-input" placeholder="SET USERNAME">
                 <input type="password" id="signPass" class="auth-input" placeholder="SET PASSWORD">
-                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME (e.g. VENOM)">
+                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME">
                 <button class="auth-btn" onclick="handleSignup()">INITIALIZE</button>
                 <div class="switch-text" onclick="toggleAuth()">Back to Login</div>
             </div>
         </div>
     </div>
 
+    <!-- SIDEBAR -->
     <div id="sidebar">
         <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
         <div class="menu-item" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</div>
@@ -161,6 +164,7 @@
     </div>
     <div id="overlay" onclick="toggleMenu()"></div>
 
+    <!-- SUPPORT MODAL -->
     <div id="support-modal">
         <div class="support-head">
             <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
@@ -173,6 +177,7 @@
         </div>
     </div>
 
+    <!-- PREVIEW MODAL -->
     <div id="preview-modal">
         <div class="preview-header">
             <span class="preview-title">LIVE PREVIEW</span>
@@ -181,6 +186,7 @@
         <iframe id="preview-frame"></iframe>
     </div>
 
+    <!-- MAIN UI -->
     <div id="main-interface">
         <header>
             <div class="brand-group">
@@ -208,8 +214,9 @@
         let currentHistory = [];
         let selectedImage = null;
 
+        // --- AUTO UPDATE & BOOT ---
         window.onload = () => {
-            checkForUpdates(); // AUTO UPDATE CHECK ON LOAD
+            checkForUpdates();
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 setTimeout(() => {
@@ -224,12 +231,9 @@
                     }
                 }, 800);
             }, 2500);
-
-            // AUTO UPDATE ON VISIBILITY CHANGE
             document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible') checkForUpdates(); });
         };
 
-        // --- AUTO UPDATE LOGIC ---
         async function checkForUpdates() {
             try {
                 const res = await fetch(window.location.href, { cache: 'no-store' });
@@ -374,7 +378,7 @@
             div.className = `msg ${role === 'USER' ? 'user' : 'ai'}`;
             let name = role === 'USER' ? USER_NAME : AI_NAME;
             if(role === 'SYSTEM') name = "KERNEL";
-
+            
             let content = "";
             if(img) content += `<img src="${img}" style="max-width:100%; border-radius:5px; border:1px solid var(--accent); margin-bottom:5px;"><br>`;
             content += formatText(text);
@@ -384,6 +388,7 @@
             box.scrollTop = box.scrollHeight;
         }
 
+        // --- UTILS ---
         window.copyToClipboard = function(id) {
             const text = document.getElementById(id+"_raw").value;
             navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(()=>fallbackCopy(text));
@@ -400,30 +405,41 @@
         }
         window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
 
-        // SUPPORT FIXED
+        // --- SUPPORT (FIXED) ---
         async function sendSupportMsg() {
             const t = document.getElementById('support-text').value.trim();
             if(!t) return;
-            document.getElementById('support-msgs').innerHTML += `<div class="s-msg user">${t}</div>`;
-            const box = document.getElementById('support-msgs'); box.scrollTop = box.scrollHeight;
+            // Fix: Don't clear box immediately to prevent flicker if user types fast, but here we do for UX
+            const box = document.getElementById('support-msgs');
+            // Add user msg to UI
+            const div = document.createElement('div');
+            div.className = 's-msg user'; div.innerText = t;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+            
             document.getElementById('support-text').value = "";
+            
             await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
         }
+        
         async function checkSupportMsgs() {
+            if(!USER_NAME) return;
             try {
                 const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
                 const msgs = await res.json();
                 const box = document.getElementById('support-msgs');
                 
-                let html = '<div class="s-msg admin">Admin Online.</div>';
-                msgs.forEach(m => {
-                    let cls = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
-                    html += `<div class="${cls}">${m.text}</div>`;
-                });
-                
-                if(box.innerHTML !== html) {
-                    box.innerHTML = html;
-                    box.scrollTop = box.scrollHeight;
+                // Only rebuild if count changes (Basic Sync)
+                // For perfect sync, we should compare IDs, but for this scale, length check is fine
+                // Note: 'Admin Online' div is static, so +1
+                if(box.childElementCount !== msgs.length + 1) {
+                     let html = '<div class="s-msg admin">Admin Online.</div>';
+                     msgs.forEach(m => {
+                        let cls = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
+                        html += `<div class="${cls}">${m.text}</div>`;
+                     });
+                     box.innerHTML = html;
+                     box.scrollTop = box.scrollHeight;
                 }
             } catch(e){}
         }
