@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>SYSTEM v80.0 [ULTIMATE]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYSTEM v81.0 [FINAL]</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
     
@@ -37,7 +37,7 @@
             margin-top: 15px; letter-spacing: 3px; opacity: 0;
             animation: fadeIn 2s forwards 1s;
         }
-        @keyframes glitch { 0% { transform: translate(0); } 100% { transform: translate(2px, -2px); } }
+        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
         @keyframes fadeIn { to { opacity: 1; } }
 
         /* AUTH SYSTEM */
@@ -83,24 +83,15 @@
         .code-wrapper { margin: 10px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
         .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 6px 12px; border-bottom: 1px solid #333; }
         .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
-        
         .btn-group { display: flex; gap: 10px; }
         .action-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .action-btn:active { background: var(--accent); color: #000; }
         .run-btn { border-color: #00ff88; color: #00ff88; }
-        
         pre { margin: 0; padding: 12px; overflow-x: auto; }
         code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
         
-        strong { color: #fff; font-weight: 900; } em { color: #aaa; font-style: italic; }
-        h1, h2, h3 { color: var(--accent); margin: 10px 0 5px; border-bottom: 1px solid #333; font-family: var(--font-head); }
-        .inline-code { background: #111; color: #00ff9d; padding: 2px 5px; border-radius: 4px; border: 1px solid #333; font-size: 0.85rem; font-family: 'Consolas', monospace; }
-
         /* INPUT AREA */
         .input-area { background: var(--panel); padding: 8px 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; z-index: 50; }
-        
         .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--accent); background: transparent; color: var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        
         textarea { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 20px; resize: none; height: 40px; font-family: var(--font-mono); font-size: 0.9rem; }
         textarea:focus { border-color: var(--accent); }
         #sendBtn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #000; border: none; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -114,15 +105,18 @@
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 150; display: none; }
         #overlay.active { display: block; }
 
+        /* SUPPORT MODAL FIXED */
         #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
         .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
-        .support-body { flex: 1; padding: 20px; overflow-y: auto; }
-        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; margin-bottom: 10px; word-wrap: break-word; }
+        .support-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        .s-msg { padding: 10px; border-radius: 6px; max-width: 80%; word-wrap: break-word; font-size: 0.9rem; }
         .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
         .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
+        
         .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
 
-        /* PREVIEW */
+        /* PREVIEW MODAL */
         #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 1000; display: none; flex-direction: column; }
         .preview-header { height: 50px; background: #222; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid #444; }
         .preview-title { color: #fff; font-family: var(--font-head); font-weight: bold; }
@@ -160,11 +154,33 @@
 
     <!-- SIDEBAR -->
     <div id="sidebar">
-        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
+        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support Chat</div>
         <div class="menu-item" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</div>
         <div class="menu-item" onclick="nukeMemory()" style="color:#ff4444"> <i class="fas fa-trash"></i> Wipe Data</div>
     </div>
     <div id="overlay" onclick="toggleMenu()"></div>
+
+    <!-- SUPPORT MODAL -->
+    <div id="support-modal">
+        <div class="support-head">
+            <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
+            <i class="fas fa-times" onclick="toggleSupport()" style="color:#fff; cursor:pointer;"></i>
+        </div>
+        <div class="support-body" id="support-msgs"><div class="s-msg admin">Admin Online.</div></div>
+        <div class="support-input">
+            <input type="text" id="support-text" placeholder="Message..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px; outline:none;">
+            <button onclick="sendSupportMsg()" style="background:var(--accent); border:none; padding:0 20px; font-weight:bold;">SEND</button>
+        </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div id="preview-modal">
+        <div class="preview-header">
+            <span class="preview-title">LIVE PREVIEW</span>
+            <button class="close-preview-btn" onclick="closePreview()">CLOSE</button>
+        </div>
+        <iframe id="preview-frame"></iframe>
+    </div>
 
     <!-- MAIN UI -->
     <div id="main-interface">
@@ -188,34 +204,13 @@
         </div>
     </div>
 
-    <!-- MODALS -->
-    <div id="support-modal">
-        <div class="support-head">
-            <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
-            <i class="fas fa-times" onclick="toggleSupport()" style="color:#fff; cursor:pointer;"></i>
-        </div>
-        <div class="support-body" id="support-msgs"><div class="s-msg admin">Admin Online.</div></div>
-        <div class="support-input">
-            <input type="text" id="support-text" placeholder="Message..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px; outline:none;">
-            <button onclick="sendSupportMsg()" style="background:var(--accent); border:none; padding:0 20px; font-weight:bold;">SEND</button>
-        </div>
-    </div>
-
-    <div id="preview-modal">
-        <div class="preview-header">
-            <span class="preview-title">LIVE PREVIEW</span>
-            <button class="close-preview-btn" onclick="closePreview()">CLOSE</button>
-        </div>
-        <iframe id="preview-frame"></iframe>
-    </div>
-
     <script>
         const SERVER_URL = "https://shehzadplayz.pythonanywhere.com"; 
         let USER_NAME = "", AI_NAME = "";
         let currentHistory = [];
         let selectedImage = null;
 
-        // --- SMART UPDATE CHECK ---
+        // --- AUTO UPDATE CHECK ---
         window.onload = () => {
             checkForUpdates();
             setTimeout(() => {
@@ -236,32 +231,15 @@
         };
 
         async function checkForUpdates() {
-            const currentHash = localStorage.getItem('site_hash');
             try {
-                const response = await fetch(window.location.href, { cache: 'no-store' });
-                const text = await response.text();
-                const newHash = text.length.toString();
-                if (currentHash && currentHash !== newHash) {
-                    localStorage.setItem('site_hash', newHash);
-                    window.location.reload();
-                } else { localStorage.setItem('site_hash', newHash); }
-            } catch (e) {}
+                const res = await fetch(window.location.href, { cache: 'no-store' });
+                const txt = await res.text();
+                const hash = txt.length.toString();
+                if (localStorage.getItem('sys_ver') && localStorage.getItem('sys_ver') !== hash) {
+                    localStorage.setItem('sys_ver', hash); window.location.reload();
+                } else { localStorage.setItem('sys_ver', hash); }
+            } catch(e){}
         }
-
-        // --- IMAGE HANDLING ---
-        function previewImage() {
-            const file = document.getElementById('imgInput').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedImage = e.target.result;
-                    const img = document.getElementById('img-preview');
-                    img.src = selectedImage; img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        function clearImage() { selectedImage = null; document.getElementById('imgInput').value = ""; document.getElementById('img-preview').style.display = 'none'; }
 
         // --- AUTH ---
         function toggleAuth() { document.getElementById('authContainer').classList.toggle('flipped'); }
@@ -298,11 +276,27 @@
             
             currentHistory = JSON.parse(localStorage.getItem('sys_hist') || "[]");
             if(currentHistory.length === 0) addMsg("SYSTEM", `Core Online. Welcome ${USER_NAME}.`);
-            else currentHistory.forEach(m => addMsg(m.role==='user'?'USER':'AI', m.content, false));
+            else currentHistory.forEach(m => addMsg(m.role==='user'?'USER':'AI', m.content, null, false));
             
-            setInterval(checkSupportMsgs, 4000);
+            setInterval(checkSupportMsgs, 3000);
         }
 
+        // --- IMAGES ---
+        function previewImage() {
+            const file = document.getElementById('imgInput').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImage = e.target.result;
+                    const img = document.getElementById('img-preview');
+                    img.src = selectedImage; img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        function clearImage() { selectedImage = null; document.getElementById('imgInput').value = ""; document.getElementById('img-preview').style.display = 'none'; }
+
+        // --- CHAT ---
         async function handleSend() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
@@ -316,7 +310,6 @@
             const btn = document.getElementById('sendBtn');
             btn.disabled = true; btn.style.opacity = "0.5";
 
-            // Only save text to history
             if(text) currentHistory.push({ role: "user", content: text });
             localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
 
@@ -328,7 +321,7 @@
                         user_name: USER_NAME,
                         ai_name: AI_NAME,
                         message: text,
-                        image: imgData, // Send Image
+                        image: imgData,
                         history: currentHistory
                     })
                 });
@@ -374,13 +367,13 @@
             return finalHtml;
         }
 
-        function addMsg(role, text, img=null) {
+        function addMsg(role, text, img=null, animate=true) {
             const box = document.getElementById('chat-container');
             const div = document.createElement('div');
             div.className = `msg ${role === 'USER' ? 'user' : 'ai'}`;
             let name = role === 'USER' ? USER_NAME : AI_NAME;
             if(role === 'SYSTEM') name = "KERNEL";
-            
+
             let content = "";
             if(img) content += `<img src="${img}" style="max-width:100%; border-radius:5px; border:1px solid var(--accent); margin-bottom:5px;"><br>`;
             content += formatText(text);
@@ -390,7 +383,7 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // UTILS
+        // --- UTILS ---
         window.copyToClipboard = function(id) {
             const text = document.getElementById(id+"_raw").value;
             navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(()=>fallbackCopy(text));
@@ -407,27 +400,40 @@
         }
         window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
 
-        // SUPPORT
+        // --- SUPPORT (FIXED SYNC) ---
         async function sendSupportMsg() {
             const t = document.getElementById('support-text').value.trim();
             if(!t) return;
+            // UI Add
             document.getElementById('support-msgs').innerHTML += `<div class="s-msg user">${t}</div>`;
+            const box = document.getElementById('support-msgs'); box.scrollTop = box.scrollHeight;
             document.getElementById('support-text').value = "";
+            
             await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
         }
+
         async function checkSupportMsgs() {
+            if(!USER_NAME) return;
             try {
                 const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
                 const msgs = await res.json();
                 const box = document.getElementById('support-msgs');
-                let h = '<div class="s-msg admin">Connected.</div>';
-                msgs.forEach(m=>{
-                    let style = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
-                    h+=`<div class="${style}">${m.text}</div>`;
+                
+                let html = '<div class="s-msg admin">Admin Online.</div>';
+                msgs.forEach(m => {
+                    let cls = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
+                    html += `<div class="${cls}">${m.text}</div>`;
                 });
-                if(box.innerHTML !== h) { box.innerHTML = h; box.scrollTop = box.scrollHeight; }
+                
+                // Update only if new messages to avoid flicker
+                // Simplified: Check length or just update
+                if(box.innerHTML !== html) {
+                    box.innerHTML = html;
+                    box.scrollTop = box.scrollHeight;
+                }
             } catch(e){}
         }
+
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
         function toggleSupport() { document.getElementById('support-modal').style.display = document.getElementById('support-modal').style.display === 'flex' ? 'none' : 'flex'; toggleMenu(); }
         function nukeMemory() { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } }
