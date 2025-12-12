@@ -274,39 +274,48 @@
     </div>
 
     <script>
-        // *** VERSION MATCH (IMPORTANT) ***
-        const CURRENT_VERSION = "1.1"; // This Matches version.json
+        // *** VERSION: 1.2 (MATCHED WITH JSON) ***
+        const CURRENT_VERSION = "1.2"; 
         
         const API = "https://shehzadplayz.pythonanywhere.com"; 
         let USER = "", AI = "", CR = 0;
         let HIST = [];
         let IMG = null;
 
-        // Auto Update Logic - SAFE MODE
+        // Auto Update Logic - SAFE MODE (ANTI-LOOP)
         function checkForUpdates() {
             fetch('version.json?t=' + new Date().getTime())
                 .then(response => { if (!response.ok) return null; return response.json(); })
                 .then(data => {
                     if (data && data.version && data.version !== CURRENT_VERSION) {
-                        // Check if we already reloaded for this version recently (Loop Protection)
-                        const lastReloadVer = sessionStorage.getItem('reloaded_for_ver');
                         
-                        if (lastReloadVer !== data.version) {
-                            console.log("New Version Found: " + data.version);
-                            // Clear User Data to force login (Requested)
-                            localStorage.removeItem('sys_user');
-                            localStorage.removeItem('sys_ai');
-                            
-                            // Set flag to prevent loop
-                            sessionStorage.setItem('reloaded_for_ver', data.version);
-                            
-                            // Reload
-                            window.location.reload(true);
+                        // ANTI-LOOP: Check time since last force reload
+                        const lastReloadTime = localStorage.getItem('last_update_reload_time');
+                        const now = new Date().getTime();
+                        
+                        // If reloaded less than 60 seconds ago, DO NOT RELOAD AGAIN
+                        if (lastReloadTime && (now - lastReloadTime) < 60000) {
+                            console.log("Reload suppressed (Anti-Loop)");
+                            return; 
                         }
+
+                        console.log("New Version: " + data.version);
+                        
+                        // Clear User Data to force login (Requested)
+                        localStorage.removeItem('sys_user');
+                        localStorage.removeItem('sys_ai');
+                        
+                        // Save timestamp to prevent immediate loop
+                        localStorage.setItem('last_update_reload_time', now);
+                        
+                        // Reload
+                        window.location.reload(true);
                     }
                 }).catch(err => console.log("Update check failed"));
         }
-        setInterval(checkForUpdates, 30000); checkForUpdates();
+        setInterval(checkForUpdates, 30000); 
+        // Initial Check
+        setTimeout(checkForUpdates, 5000);
 
         // Matrix Rain
         const canvas = document.getElementById('matrix-canvas');
