@@ -2,451 +2,481 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM v90.0 [GOD]</title>
+    <!-- SUPER IMPORTANT: DISABLES ZOOM -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>SHEHZAD SYSTEM V99</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     
     <style>
-        /* --- THEME: ABYSSAL DARK --- */
         :root {
-            --bg: #000000; --panel: #0a0a0a; --accent: #00f3ff;
-            --text: #ffffff; --user-msg: #002222; --ai-msg: #0f0f0f; --border: #1f1f1f;
-            --code-bg: #050505;
-            --font-head: 'Rajdhani', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+            --bg: #020202; --panel: #0a0a0a;
+            --cyan: #00f3ff; --gold: #ffd700; --red: #ff0040; --deep-blue: #0066ff;
+            --glass: rgba(10,10,10,0.95);
+            --font-head: 'Orbitron', sans-serif; --font-code: 'JetBrains Mono', monospace;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+        
+        /* DISABLE ZOOM GESTURES */
+        html, body {
+            touch-action: pan-x pan-y; /* Disables pinch zoom */
+            height: 100dvh; overflow: hidden; 
+            background: var(--bg); color: #fff; font-family: var(--font-code);
+            /* Prevent Pull-to-Refresh */
+            overscroll-behavior: none;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); color: var(--text); font-family: var(--font-mono); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* 4D INTRO */
+        /* --- CINEMATIC INTRO --- */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform-style: preserve-3d; transition: opacity 1s ease;
+            overflow: hidden;
         }
+        #matrix-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.3; }
+        .intro-content { z-index: 2; text-align: center; width: 90%; }
+        
+        .glitch-wrapper { position: relative; margin-bottom: 20px; }
         .glitch-text {
-            font-family: var(--font-head); font-weight: 900; font-size: 2.5rem;
-            color: var(--accent); letter-spacing: 4px; text-transform: uppercase;
-            text-shadow: 2px 2px 0px #ff0055, -2px -2px 0px #00ff9d;
-            animation: glitch 0.5s infinite alternate;
+            font-family: var(--font-head); font-size: 2.5rem; font-weight: 900;
+            color: #fff; text-transform: uppercase; letter-spacing: 3px;
+            position: relative; animation: glitch 1s linear infinite;
         }
-        .sub-text {
-            font-family: var(--font-mono); color: #666; font-size: 0.7rem;
-            margin-top: 15px; letter-spacing: 3px; opacity: 0;
-            animation: fadeIn 2s forwards 1s;
-        }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
-        @keyframes fadeIn { to { opacity: 1; } }
+        @media (max-width: 600px) { .glitch-text { font-size: 1.8rem; letter-spacing: 2px; } }
 
-        /* AUTH SYSTEM */
+        @keyframes glitch { 2%, 64% { transform: translate(2px,0); } 4%, 60% { transform: translate(-2px,0); } 62% { transform: translate(0,0) skew(5deg); } }
+        .glitch-text:before, .glitch-text:after { content: attr(data-text); position: absolute; left: 0; width: 100%; }
+        .glitch-text:before { animation: glitchTop 1s linear infinite; clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%); }
+        @keyframes glitchTop { 2%, 64% { transform: translate(2px,-2px); } 4%, 60% { transform: translate(-2px,2px); } 62% { transform: translate(13px,-1px) skew(-13deg); } }
+        .glitch-text:after { animation: glitchBotom 1.5s linear infinite; clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%); }
+        @keyframes glitchBotom { 2%, 64% { transform: translate(-2px,0); } 4%, 60% { transform: translate(-2px,0); } 62% { transform: translate(-22px,5px) skew(21deg); } }
+
+        .loader-bar { width: 80%; max-width: 300px; height: 4px; background: #222; margin: 20px auto; position: relative; overflow: hidden; border-radius: 2px; }
+        .loader-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); animation: load 3s ease-in-out forwards; }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+        #enter-btn {
+            margin-top: 20px; padding: 12px 0; width: 80%; max-width: 250px; 
+            background: rgba(0, 243, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); 
+            font-family: var(--font-head); font-size: 1.1rem; cursor: pointer; 
+            display: none; letter-spacing: 2px; transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); min-height: 44px;
+        }
+        #enter-btn:active { background: var(--cyan); color: #000; }
+
+        /* --- AUTH SCREEN --- */
         #auth-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 500; display: none;
-            perspective: 1000px; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.95); z-index: 500; display: none;
+            align-items: center; justify-content: center; perspective: 1000px;
+            background-image: radial-gradient(circle at 50% 50%, #0a1f25 0%, #000 100%);
         }
-        .auth-container { width: 320px; height: 450px; position: relative; transform-style: preserve-3d; transition: transform 0.6s; }
-        .auth-container.flipped { transform: rotateY(180deg); }
-        .auth-card {
+        .card-container { width: 90%; max-width: 340px; height: 500px; position: relative; transform-style: preserve-3d; transition: transform 0.8s; }
+        .card-container.flipped { transform: rotateY(180deg); }
+        .card-face {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            background: var(--panel); border: 1px solid var(--accent);
-            border-radius: 10px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.15);
+            background: rgba(15, 20, 25, 0.7); border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); backdrop-filter: blur(20px);
         }
-        .auth-card.back { transform: rotateY(180deg); }
-        .auth-title { font-family: var(--font-head); font-size: 2rem; color: var(--accent); margin-bottom: 20px; }
-        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; text-align: center; font-family: var(--font-mono); border-radius: 4px; font-size: 1rem; }
-        .auth-input:focus { border-color: var(--accent); }
-        .auth-btn { width: 100%; padding: 12px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; font-family: var(--font-head); border-radius: 4px; font-size: 1.2rem; margin-top: 10px; }
-        .switch-text { margin-top: 20px; font-size: 0.8rem; color: #888; cursor: pointer; text-decoration: underline; }
+        .card-face.back { transform: rotateY(180deg); border-color: rgba(255, 0, 64, 0.4); }
+        .auth-title { font-family: var(--font-head); font-size: 1.8rem; color: #fff; margin-bottom: 25px; letter-spacing: 2px; }
+        .auth-inp {
+            width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5);
+            border: 1px solid #333; color: #fff; text-align: center;
+            font-family: var(--font-code); border-radius: 12px; font-size: 16px;
+        }
+        .auth-btn {
+            width: 100%; padding: 15px; background: linear-gradient(90deg, var(--cyan), var(--deep-blue)); 
+            color: #000; font-weight: bold; border: none; cursor: pointer; font-family: var(--font-head);
+            margin-top: 15px; font-size: 1.1rem; border-radius: 12px;
+        }
+        .switch-txt { margin-top: 25px; font-size: 0.85rem; color: #aaa; padding: 10px; cursor: pointer; }
 
-        /* MAIN UI */
-        #main-interface { display: none; flex-direction: column; height: 100%; width: 100%; }
-        header { height: 65px; background: var(--panel); border-bottom: 1px solid var(--accent); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 50; }
-        
-        .brand-group { display: flex; flex-direction: column; }
-        .brand { font-family: var(--font-head); color: var(--accent); font-size: 1.4rem; font-weight: 800; letter-spacing: 2px; line-height: 1; }
-        .credits { font-size: 0.6rem; color: #fff; font-weight: bold; text-transform: uppercase; margin-top: 4px; letter-spacing: 1px; text-shadow: 0 0 5px var(--accent); }
-        
-        .menu-btn { font-size: 1.4rem; color: #fff; cursor: pointer; }
+        /* --- UI --- */
+        header {
+            height: 60px; background: var(--glass); border-bottom: 1px solid #222;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 15px; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .brand-box { display: flex; flex-direction: column; align-items: flex-start; }
+        .title-row { display: flex; align-items: center; gap: 8px; }
+        .brand-box h1 { 
+            font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--cyan), var(--deep-blue));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 900; margin: 0;
+        }
+        .v99-badge {
+            font-family: var(--font-head); font-size: 0.6rem; color: var(--gold);
+            border: 1px solid var(--gold); padding: 1px 4px; border-radius: 3px;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); animation: glowGold 2s infinite;
+        }
+        @keyframes glowGold { 0% { opacity: 0.7; } 50% { opacity: 1; box-shadow: 0 0 10px var(--gold); } 100% { opacity: 0.7; } }
+        .brand-box span { font-size: 0.6rem; color: #666; font-weight: bold; margin-top: 2px; }
+        .brand-box span b { color: var(--red); }
+        .right-box { display: flex; align-items: center; gap: 10px; }
+        .cr-box { text-align: right; line-height: 1.1; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px solid #222; }
+        .cr-label { font-size: 0.55rem; color: var(--cyan); display: block; }
+        .cr-val { font-family: var(--font-head); font-size: 1rem; color: #fff; }
+        .menu-btn { font-size: 1.3rem; color: #fff; padding: 5px; }
 
-        /* CHAT AREA */
-        #chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 92%; padding: 12px; border-radius: 6px; font-size: 0.9rem; line-height: 1.6; position: relative; word-wrap: break-word; }
-        .msg.user { align-self: flex-end; background: var(--user-msg); border-right: 2px solid var(--accent); text-align: right; color: #fff; }
-        .msg.ai { align-self: flex-start; background: var(--ai-msg); border-left: 2px solid var(--accent); color: #e0e0e0; }
-        .msg img { max-width: 100%; border-radius: 5px; border: 1px solid var(--accent); margin-bottom: 5px; }
-        .meta { font-size: 0.65rem; opacity: 0.7; margin-bottom: 5px; font-weight: bold; color: var(--accent); font-family: var(--font-head); text-transform: uppercase; }
-
-        /* CODE BLOCKS */
-        .code-wrapper { margin: 10px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; background: var(--code-bg); text-align: left; }
-        .code-header { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 6px 12px; border-bottom: 1px solid #333; }
-        .lang-tag { font-size: 0.7rem; color: #888; font-weight: bold; text-transform: uppercase; }
-        
-        .btn-group { display: flex; gap: 10px; }
-        .action-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; font-size: 0.7rem; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .action-btn:active { background: var(--accent); color: #000; }
-        .run-btn { border-color: #00ff88; color: #00ff88; }
-        
-        pre { margin: 0; padding: 12px; overflow-x: auto; }
-        code { font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff9d; }
-        
-        strong { color: #fff; font-weight: 900; } em { color: #aaa; font-style: italic; }
-        h1, h2, h3 { color: var(--accent); margin: 10px 0 5px; border-bottom: 1px solid #333; font-family: var(--font-head); }
-        .inline-code { background: #111; color: #00ff9d; padding: 2px 5px; border-radius: 4px; border: 1px solid #333; font-size: 0.85rem; font-family: 'Consolas', monospace; }
-
-        /* INPUT AREA */
-        .input-area { background: var(--panel); padding: 8px 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; z-index: 50; }
-        .icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--accent); background: transparent; color: var(--accent); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        textarea { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 20px; resize: none; height: 40px; font-family: var(--font-mono); font-size: 0.9rem; }
-        textarea:focus { border-color: var(--accent); }
-        #sendBtn { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: #000; border: none; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        
-        #img-preview { display: none; width: 40px; height: 40px; border-radius: 5px; object-fit: cover; border: 1px solid var(--accent); }
-
-        /* SIDEBAR & MODALS */
-        #sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #0c0c0c; border-right: 1px solid var(--accent); z-index: 200; transition: 0.3s; display: flex; flex-direction: column; }
+        #sidebar {
+            position: fixed; top: 0; left: -85%; width: 80%; height: 100%;
+            background: #080808; border-right: 2px solid var(--cyan); z-index: 200;
+            transition: 0.3s; display: flex; flex-direction: column; box-shadow: 50px 0 100px rgba(0,0,0,0.8);
+        }
         #sidebar.active { left: 0; }
-        .menu-item { padding: 15px; border-bottom: 1px solid #222; color: #aaa; cursor: pointer; }
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 150; display: none; }
-        #overlay.active { display: block; }
+        .menu-head { padding: 25px 20px; font-family: var(--font-head); color: var(--cyan); font-size: 1.1rem; border-bottom: 1px solid #222; }
+        .menu-link { padding: 18px 20px; border-bottom: 1px solid #111; color: #aaa; font-size: 1rem; display: flex; align-items: center; gap: 12px; }
+        .menu-link:active { background: rgba(0,243,255,0.1); color: #fff; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:150; display:none; backdrop-filter:blur(3px); }
 
-        #support-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 300; display: none; flex-direction: column; }
-        .support-head { padding: 15px; border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; }
-        .support-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .s-msg { padding: 10px; border-radius: 4px; max-width: 80%; word-wrap: break-word; }
-        .s-msg.admin { align-self: flex-start; background: #111; border: 1px solid #333; color: #fff; }
-        .s-msg.user { align-self: flex-end; background: #002b33; border: 1px solid var(--accent); color: #fff; text-align: right; }
-        .support-input { padding: 10px; border-top: 1px solid #333; display: flex; gap: 10px; background: #0a0a0a; }
+        #interface { display: none; flex-direction: column; height: 100%; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; background-image: radial-gradient(circle at 50% 50%, #050505 0%, #000 100%); }
+        .msg { max-width: 92%; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background: linear-gradient(145deg, #002222, #001a1a); border: 1px solid var(--cyan); border-right: 3px solid var(--cyan); color: #fff; }
+        .msg.ai { align-self: flex-start; background: #0e0e0e; border: 1px solid #222; border-left: 3px solid var(--red); color: #ccc; }
 
-        /* PREVIEW MODAL */
-        #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 1000; display: none; flex-direction: column; }
-        .preview-header { height: 50px; background: #222; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; border-bottom: 1px solid #444; }
-        .preview-title { color: #fff; font-family: var(--font-head); font-weight: bold; }
-        .close-preview-btn { background: #ff0055; color: white; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        #preview-frame { flex: 1; border: none; width: 100%; background: #fff; }
+        .code-wrapper { margin: 8px 0; border: 1px solid #333; border-radius: 6px; overflow: hidden; font-size: 0.8rem; }
+        .code-header { background: #1a1a1a; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .code-header span { font-size: 0.7rem; color: #666; font-weight: bold; }
+        .code-actions { display: flex; gap: 8px; }
+        .action-btn-sm { padding: 4px 8px; border-radius: 3px; font-size: 0.65rem; background: #222; border: 1px solid #444; color: #ccc; }
+        pre { margin: 0 !important; padding: 10px !important; overflow-x: auto; background: #000 !important; }
+
+        #preview-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 99999; display: none; flex-direction: column; }
+        .prev-head { height: 50px; flex-shrink: 0; background: #111; border-bottom: 1px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .prev-close { color: var(--red); font-weight: bold; border: 1px solid var(--red); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; }
+        iframe { flex-grow: 1; width: 100%; border: none; background: #fff; }
+
+        .input-bar { background: #050505; padding: 10px; border-top: 1px solid #222; display: flex; gap: 8px; align-items: flex-end; z-index: 50; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+        textarea { flex: 1; background: #000; border: 1px solid #333; color: var(--cyan); padding: 10px; border-radius: 20px; font-family: var(--font-code); height: 44px; resize: none; font-size: 16px; max-height: 120px; }
+        textarea:focus { border-color: var(--cyan); }
+        .btn { width: 44px; height: 44px; border-radius: 50%; background: #111; color: var(--cyan); border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .btn:active { background: var(--cyan); color: #000; }
+
+        #prev-box { position: absolute; bottom: 70px; left: 10px; background: #000; border: 1px solid var(--cyan); padding: 4px; border-radius: 4px; display: none; z-index: 40; }
+        #prev-img { width: 60px; height: 60px; object-fit: cover; }
+        .lb-panel { width: 95%; max-width: 380px; max-height: 80vh; overflow-y: auto; }
+        .lb-item { padding: 12px; font-size: 0.9rem; }
+
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
 </head>
 <body>
 
+    <!-- CINEMATIC INTRO -->
     <div id="intro-screen">
-        <div class="glitch-text">SYSTEM</div>
-        <div class="sub-text">CREATED BY SHEHZAD / WAHAB</div>
-    </div>
-
-    <!-- AUTH -->
-    <div id="auth-wrapper">
-        <div class="auth-container" id="authContainer">
-            <div class="auth-card front">
-                <div class="auth-title">LOGIN</div>
-                <input type="text" id="loginUser" class="auth-input" placeholder="USERNAME">
-                <input type="password" id="loginPass" class="auth-input" placeholder="PASSWORD">
-                <button class="auth-btn" onclick="handleLogin()">ACCESS</button>
-                <div class="switch-text" onclick="toggleAuth()">Create New Account</div>
+        <canvas id="matrix-canvas"></canvas>
+        <div class="intro-content">
+            <div class="glitch-wrapper">
+                <div class="glitch-text" data-text="SYSTEM ONLINE">SYSTEM ONLINE</div>
             </div>
-            <div class="auth-card back">
-                <div class="auth-title">NEW USER</div>
-                <input type="text" id="signUser" class="auth-input" placeholder="SET USERNAME">
-                <input type="password" id="signPass" class="auth-input" placeholder="SET PASSWORD">
-                <input type="text" id="signAi" class="auth-input" placeholder="AI NAME">
-                <button class="auth-btn" onclick="handleSignup()">INITIALIZE</button>
-                <div class="switch-text" onclick="toggleAuth()">Back to Login</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SIDEBAR -->
-    <div id="sidebar">
-        <div class="menu-item" onclick="toggleSupport()"> <i class="fas fa-bug"></i> Support</div>
-        <div class="menu-item" onclick="logout()"> <i class="fas fa-sign-out-alt"></i> Logout</div>
-        <div class="menu-item" onclick="nukeMemory()" style="color:#ff4444"> <i class="fas fa-trash"></i> Wipe Data</div>
-    </div>
-    <div id="overlay" onclick="toggleMenu()"></div>
-
-    <!-- SUPPORT MODAL -->
-    <div id="support-modal">
-        <div class="support-head">
-            <span style="color:var(--accent); font-family:var(--font-head);">UPLINK</span>
-            <i class="fas fa-times" onclick="toggleSupport()" style="color:#fff; cursor:pointer;"></i>
-        </div>
-        <div class="support-body" id="support-msgs"><div class="s-msg admin">Admin Online.</div></div>
-        <div class="support-input">
-            <input type="text" id="support-text" placeholder="Message..." style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px; outline:none;">
-            <button onclick="sendSupportMsg()" style="background:var(--accent); border:none; padding:0 20px; font-weight:bold;">SEND</button>
+            <div class="loader-bar"><div class="loader-fill"></div></div>
+            <button id="enter-btn" onclick="checkAuth()">ENTER SYSTEM</button>
         </div>
     </div>
 
     <!-- PREVIEW MODAL -->
     <div id="preview-modal">
-        <div class="preview-header">
-            <span class="preview-title">LIVE PREVIEW</span>
-            <button class="close-preview-btn" onclick="closePreview()">CLOSE</button>
+        <div class="prev-head">
+            <span style="color:var(--cyan); font-family:var(--font-head); font-size:0.9rem;">PREVIEW</span>
+            <button class="prev-close" onclick="closePreview()">CLOSE</button>
         </div>
         <iframe id="preview-frame"></iframe>
     </div>
 
-    <!-- MAIN UI -->
-    <div id="main-interface">
-        <header>
-            <div class="brand-group">
-                <div class="brand" id="brandTitle">SYSTEM</div>
-                <div class="credits">CREATED BY SHEHZAD & WAHAB</div>
+    <!-- SIDEBAR -->
+    <div id="sidebar">
+        <div class="menu-head">MENU</div>
+        <div class="menu-link" onclick="toggleLb()"> <i class="fas fa-trophy" style="width:20px;"></i> LEADERBOARD</div>
+        <div class="menu-link" onclick="clearChat()"> <i class="fas fa-eraser" style="width:20px;"></i> CLEAR DATA</div>
+        <div class="menu-link" onclick="logout()" style="color:var(--red); border-top:1px solid #222; margin-top:auto;"> <i class="fas fa-power-off" style="width:20px;"></i> DISCONNECT</div>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <!-- LEADERBOARD -->
+    <div id="lb-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:300; display:none; align-items:center; justify-content:center;">
+        <div class="lb-panel" style="background:#080808; border:1px solid var(--cyan); border-radius:8px; padding:15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #222; padding-bottom:10px;">
+                <h3 style="color:var(--gold); font-family:var(--font-head);">TOP RANKERS</h3>
+                <i class="fas fa-times" onclick="toggleLb()" style="color:#fff; cursor:pointer; padding:5px;"></i>
             </div>
-            <i class="fas fa-bars menu-btn" style="color:var(--accent);" onclick="toggleMenu()"></i>
+            <div id="lb-list">Loading...</div>
+        </div>
+    </div>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-wrapper">
+        <div class="card-container" id="authCard">
+            <!-- Front: Login -->
+            <div class="card-face front">
+                <i class="fas fa-user-shield auth-icon"></i>
+                <div class="auth-title">LOGIN</div>
+                <input id="lUser" class="auth-inp" placeholder="IDENTITY" autocapitalize="none">
+                <input id="lPass" type="password" class="auth-inp" placeholder="ACCESS CODE">
+                <button class="auth-btn" onclick="auth('login')">ACCESS SYSTEM</button>
+                <div class="switch-txt" onclick="flipAuth()">New here? <b>Initialize</b></div>
+            </div>
+            <!-- Back: Signup -->
+            <div class="card-face back">
+                <i class="fas fa-microchip auth-icon"></i>
+                <div class="auth-title" style="color:var(--red);">REGISTER</div>
+                <input id="sUser" class="auth-inp" placeholder="SET USERNAME" autocapitalize="none">
+                <input id="sPass" type="password" class="auth-inp" placeholder="SET PASSWORD">
+                <input id="sAi" class="auth-inp" placeholder="NAME YOUR AI">
+                <button class="auth-btn" style="background:linear-gradient(90deg, var(--red), #800020); color:#fff;" onclick="auth('signup')">CREATE CORE</button>
+                <div class="switch-txt" onclick="flipAuth()">Have ID? <b>Login</b></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN UI -->
+    <div id="interface">
+        <header>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
+                <div class="brand-box">
+                    <div class="title-row">
+                        <h1 id="aiTitle">SYSTEM</h1>
+                        <div class="v99-badge">FREE V99</div>
+                    </div>
+                    <span>BY <b>❤️ SHEHZAD</b></span>
+                </div>
+            </div>
+            <div class="right-box">
+                <div class="cr-box">
+                    <span class="cr-label">CREDITS</span>
+                    <span class="cr-val" id="credits">0</span>
+                </div>
+            </div>
         </header>
 
-        <div id="chat-container"></div>
+        <div id="chat-box"></div>
 
-        <div class="input-area">
-            <input type="file" id="imgInput" accept="image/*" style="display:none;" onchange="previewImage()">
-            <img id="img-preview" onclick="clearImage()">
-            <button class="icon-btn" onclick="document.getElementById('imgInput').click()"><i class="fas fa-paperclip"></i></button>
-            
-            <textarea id="userInput" placeholder="Execute..."></textarea>
-            <button id="sendBtn" onclick="handleSend()"><i class="fas fa-arrow-right"></i></button>
+        <div class="input-bar">
+            <div id="prev-box">
+                <img id="prev-img">
+                <div onclick="clearImg()" style="color:var(--red); text-align:center; font-weight:bold; cursor:pointer; font-size:10px; margin-top:2px;">REMOVE</div>
+            </div>
+            <input type="file" id="fInp" hidden onchange="showImg()">
+            <button class="btn" onclick="document.getElementById('fInp').click()"><i class="fas fa-image"></i></button>
+            <textarea id="msgInp" placeholder="Command..." rows="1"></textarea>
+            <button class="btn" id="sBtn" onclick="send()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
     <script>
-        const SERVER_URL = "https://shehzadplayz.pythonanywhere.com"; 
-        let USER_NAME = "", AI_NAME = "";
-        let currentHistory = [];
-        let selectedImage = null;
+        const CURRENT_VERSION = "1.0"; 
+        
+        const API = "https://shehzadplayz.pythonanywhere.com"; 
+        let USER = "", AI = "", CR = 0;
+        let HIST = [];
+        let IMG = null;
 
-        // --- AUTO UPDATE & BOOT ---
-        window.onload = () => {
-            checkForUpdates();
-            setTimeout(() => {
-                document.getElementById('intro-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('intro-screen').style.display = 'none';
-                    const savedUser = localStorage.getItem('sys_user');
-                    const savedAi = localStorage.getItem('sys_ai');
-                    if(savedUser && savedAi) {
-                        USER_NAME = savedUser; AI_NAME = savedAi;
-                        startMain();
-                    } else {
-                        document.getElementById('auth-wrapper').style.display = 'flex';
+        // Prevent Pull-to-Refresh via JS as backup
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) e.preventDefault(); // Disable pinch
+        }, { passive: false });
+
+        // Auto Update Logic
+        function checkForUpdates() {
+            fetch('version.json?t=' + new Date().getTime())
+                .then(response => { if (!response.ok) return null; return response.json(); })
+                .then(data => {
+                    if (data && data.version && data.version !== CURRENT_VERSION) {
+                        if ('caches' in window) caches.keys().then((names) => { names.forEach(name => caches.delete(name)); });
+                        window.location.reload(true);
                     }
-                }, 800);
-            }, 2500);
-            document.addEventListener('visibilitychange', () => { if(document.visibilityState==='visible') checkForUpdates(); });
+                }).catch(err => console.log("Update check failed"));
+        }
+        setInterval(checkForUpdates, 30000); checkForUpdates();
+
+        // Matrix Rain
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const fontSize = 14; const columns = canvas.width/fontSize;
+        const drops = Array.from({ length: Math.ceil(columns) }).fill(1);
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0'; ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                if(drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        };
+        const interval = setInterval(draw, 40);
+
+        window.onload = () => {
+            if (sessionStorage.getItem('introShown')) {
+                document.getElementById('intro-screen').style.display = 'none';
+                clearInterval(interval);
+                checkAuth();
+            } else {
+                setTimeout(() => {
+                    document.querySelector('.glitch-text').innerText = "ACCESS GRANTED";
+                    document.getElementById('enter-btn').style.display = 'block';
+                    clearInterval(interval);
+                }, 2500);
+            }
         };
 
-        async function checkForUpdates() {
+        function checkAuth() {
+            sessionStorage.setItem('introShown', 'true');
+            document.getElementById('intro-screen').style.display = 'none';
+            if(localStorage.getItem('sys_user')) {
+                USER = localStorage.getItem('sys_user'); AI = localStorage.getItem('sys_ai'); CR = localStorage.getItem('sys_cr');
+                startApp();
+            } else { document.getElementById('auth-wrapper').style.display = 'flex'; }
+        }
+
+        function flipAuth() { document.getElementById('authCard').classList.toggle('flipped'); }
+
+        async function auth(mode) {
+            const u = document.getElementById(mode=='login'?'lUser':'sUser').value;
+            const p = document.getElementById(mode=='login'?'lPass':'sPass').value;
+            const a = mode=='signup' ? document.getElementById('sAi').value : null;
+            if(!u || !p) return alert("Fill all fields");
+            const btn = event.target; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
             try {
-                const res = await fetch(window.location.href, { cache: 'no-store' });
-                const txt = await res.text();
-                const hash = txt.length.toString();
-                if (localStorage.getItem('sys_ver') && localStorage.getItem('sys_ver') !== hash) {
-                    localStorage.setItem('sys_ver', hash); window.location.reload();
-                } else { localStorage.setItem('sys_ver', hash); }
-            } catch(e){}
-        }
-
-        // --- AUTH ---
-        function toggleAuth() { document.getElementById('authContainer').classList.toggle('flipped'); }
-        async function handleSignup() {
-            const u = document.getElementById('signUser').value.trim(), p = document.getElementById('signPass').value.trim(), a = document.getElementById('signAi').value.trim();
-            if(!u || !p || !a) return alert("Fill all");
-            try {
-                const r = await fetch(SERVER_URL + '/api/auth', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ mode: 'signup', username: u, password: p, ai_name: a }) });
-                const d = await r.json();
-                if(d.status==='success') loginSuccess(u,a); else alert(d.message);
-            } catch(e){alert("Error");}
-        }
-        async function handleLogin() {
-            const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value.trim();
-            if(!u || !p) return alert("Fill all");
-            try {
-                const r = await fetch(SERVER_URL + '/api/auth', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ mode: 'login', username: u, password: p }) });
-                const d = await r.json();
-                if(d.status==='success') loginSuccess(u,d.ai_name); else alert(d.message);
-            } catch(e){alert("Error");}
-        }
-        function loginSuccess(u,a) {
-            USER_NAME = u.toUpperCase(); AI_NAME = a.toUpperCase();
-            localStorage.setItem('sys_user', USER_NAME); localStorage.setItem('sys_ai', AI_NAME);
-            document.getElementById('auth-wrapper').style.display = 'none';
-            startMain();
-        }
-        function logout() { localStorage.clear(); location.reload(); }
-
-        function startMain() {
-            document.getElementById('auth-wrapper').style.display = 'none';
-            document.getElementById('main-interface').style.display = 'flex';
-            document.getElementById('brandTitle').innerText = AI_NAME;
-            
-            currentHistory = JSON.parse(localStorage.getItem('sys_hist') || "[]");
-            if(currentHistory.length === 0) addMsg("SYSTEM", `Core Online. Welcome ${USER_NAME}.`);
-            else currentHistory.forEach(m => addMsg(m.role==='user'?'USER':'AI', m.content, null, false));
-            
-            setInterval(checkSupportMsgs, 3000);
-        }
-
-        // --- IMAGES ---
-        function previewImage() {
-            const file = document.getElementById('imgInput').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedImage = e.target.result;
-                    const img = document.getElementById('img-preview');
-                    img.src = selectedImage; img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        function clearImage() { selectedImage = null; document.getElementById('imgInput').value = ""; document.getElementById('img-preview').style.display = 'none'; }
-
-        // --- CHAT ---
-        async function handleSend() {
-            const input = document.getElementById('userInput');
-            const text = input.value.trim();
-            if (!text && !selectedImage) return;
-
-            addMsg("USER", text, selectedImage);
-            input.value = "";
-            const imgData = selectedImage;
-            clearImage();
-            
-            const btn = document.getElementById('sendBtn');
-            btn.disabled = true; btn.style.opacity = "0.5";
-
-            if(text) currentHistory.push({ role: "user", content: text });
-            localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
-
-            try {
-                const response = await fetch(SERVER_URL + '/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user_name: USER_NAME,
-                        ai_name: AI_NAME,
-                        message: text,
-                        image: imgData,
-                        history: currentHistory
-                    })
+                const res = await fetch(API+'/api/auth', {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ mode, username:u, password:p, ai_name:a })
                 });
-
-                const data = await response.json();
-                addMsg("AI", data.reply);
-                currentHistory.push({ role: "assistant", content: data.reply });
-                localStorage.setItem('sys_hist', JSON.stringify(currentHistory));
-
-            } catch (e) { addMsg("SYSTEM", "Connection Error."); }
-            btn.disabled = false; btn.style.opacity = "1";
+                const d = await res.json();
+                if(d.status === 'success') {
+                    const aiName = d.ai_name || (mode=='login' ? d.ai_name : a);
+                    saveSession(u, aiName, d.credits);
+                } else alert(d.message);
+            } catch(e) { alert("Server Error"); }
+            btn.innerHTML = mode=='login'?"ACCESS SYSTEM":"CREATE CORE";
         }
 
-        // --- FORMATTER ---
-        function formatText(text) {
-            if(!text) return "";
-            const parts = text.split(/```/g);
-            let finalHtml = "";
-            for (let i = 0; i < parts.length; i++) {
-                let content = parts[i];
-                if (i % 2 === 0) {
-                    content = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-                        .replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>')
-                        .replace(/\n/g, '<br>');
-                    finalHtml += content;
-                } else {
-                    let lang = "CODE";
-                    const firstBreak = content.indexOf('\n');
-                    if (firstBreak > -1 && firstBreak < 15) {
-                        lang = content.substring(0, firstBreak).trim();
-                        content = content.substring(firstBreak + 1);
-                    }
-                    const raw = content.trim();
-                    const safe = raw.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    const id = 'c' + Math.random().toString(36).substr(2, 5);
-                    finalHtml += `<div class="code-wrapper"><div class="code-header"><span class="lang-tag">${lang.toUpperCase()}</span><div class="btn-group"><button class="action-btn run-btn" onclick="runCode('${id}')">RUN</button><button class="action-btn" onclick="copyToClipboard('${id}')">COPY</button></div></div><pre><code id="${id}">${safe}</code></pre><textarea id="${id}_raw" style="display:none;">${raw}</textarea></div>`;
-                }
+        function saveSession(u, ai, cr) {
+            USER = u.toUpperCase(); AI = ai.toUpperCase(); CR = cr;
+            localStorage.setItem('sys_user', USER); localStorage.setItem('sys_ai', AI); localStorage.setItem('sys_cr', CR);
+            document.getElementById('auth-wrapper').style.display = 'none'; startApp();
+        }
+
+        function startApp() {
+            document.getElementById('interface').style.display = 'flex';
+            document.getElementById('aiTitle').innerText = AI;
+            document.getElementById('credits').innerText = CR;
+            HIST = JSON.parse(localStorage.getItem('sys_hist') || "[]");
+            if(HIST.length === 0) addMsg("SYSTEM", `Online. Welcome ${USER}.`);
+            else HIST.forEach(m => addMsg(m.role=='user'?USER:AI, m.content, false));
+        }
+
+        function logout() { localStorage.clear(); sessionStorage.clear(); location.reload(); }
+        function clearChat() { localStorage.removeItem('sys_hist'); location.reload(); }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; }
+
+        function showImg() {
+            const f = document.getElementById('fInp').files[0];
+            const r = new FileReader();
+            r.onload = (e) => { IMG = e.target.result; document.getElementById('prev-img').src=IMG; document.getElementById('prev-box').style.display='block'; }
+            if(f) r.readAsDataURL(f);
+        }
+        function clearImg() { IMG=null; document.getElementById('fInp').value=""; document.getElementById('prev-box').style.display='none'; }
+
+        async function send() {
+            const txt = document.getElementById('msgInp').value;
+            if(!txt && !IMG) return;
+            document.getElementById('msgInp').blur();
+            addMsg(USER, txt); document.getElementById('msgInp').value = ""; const imgData = IMG; clearImg();
+            HIST.push({role:'user', content:txt}); localStorage.setItem('sys_hist', JSON.stringify(HIST));
+            const btn = document.getElementById('sBtn'); btn.innerHTML = '<i class="fas fa-cog fa-spin"></i>'; btn.disabled = true;
+            try {
+                const res = await fetch(API+'/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({user_name:USER, ai_name:AI, message:txt, image:imgData, history:HIST}) });
+                const d = await res.json();
+                CR = d.credits; document.getElementById('credits').innerText = CR; localStorage.setItem('sys_cr', CR);
+                addMsg(AI, d.reply, true);
+                HIST.push({role:'model', content:d.reply}); localStorage.setItem('sys_hist', JSON.stringify(HIST));
+            } catch(e) { addMsg("SYSTEM", "CONNECTION LOST"); }
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; btn.disabled = false;
+        }
+
+        function addMsg(name, text, md=false) {
+            const d = document.createElement('div'); d.className = `msg ${name==USER?'user':'ai'}`;
+            let html = `<b>${name}</b><br>`;
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = md ? marked.parse(text) : text.replace(/\n/g, '<br>');
+            if (md) {
+                const pres = contentDiv.querySelectorAll('pre');
+                pres.forEach(pre => {
+                    const code = pre.querySelector('code');
+                    const lang = code.className.replace('language-', '') || 'CODE';
+                    const wrapper = document.createElement('div'); wrapper.className = 'code-wrapper';
+                    const header = document.createElement('div'); header.className = 'code-header';
+                    let headerHtml = `<span>${lang.toUpperCase()}</span><div class="code-actions">`;
+                    if(lang.includes('html') || lang.includes('xml')) headerHtml += `<button class="action-btn-sm preview" onclick="openPreview(this)"><i class="fas fa-play"></i></button>`;
+                    headerHtml += `<button class="action-btn-sm" onclick="copyCode(this)"><i class="fas fa-copy"></i></button></div>`;
+                    header.innerHTML = headerHtml;
+                    pre.parentNode.insertBefore(wrapper, pre); wrapper.appendChild(header); wrapper.appendChild(pre);
+                });
             }
-            return finalHtml;
+            d.appendChild(contentDiv);
+            document.getElementById('chat-box').appendChild(d);
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+            if(md) Prism.highlightAllUnder(d);
         }
 
-        function addMsg(role, text, img=null) {
-            const box = document.getElementById('chat-container');
-            const div = document.createElement('div');
-            div.className = `msg ${role === 'USER' ? 'user' : 'ai'}`;
-            let name = role === 'USER' ? USER_NAME : AI_NAME;
-            if(role === 'SYSTEM') name = "KERNEL";
-            
-            let content = "";
-            if(img) content += `<img src="${img}" style="max-width:100%; border-radius:5px; border:1px solid var(--accent); margin-bottom:5px;"><br>`;
-            content += formatText(text);
-
-            div.innerHTML = `<div class="meta">${name}</div>${content}`;
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
+        function copyCode(btn) {
+            const code = btn.closest('.code-wrapper').querySelector('code').innerText;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(() => showCopied(btn)).catch(() => fallbackCopy(code, btn));
+            } else { fallbackCopy(code, btn); }
+        }
+        function fallbackCopy(text, btn) {
+            const t = document.createElement("textarea"); t.value = text; t.style.position="fixed"; t.style.left="-9999px";
+            document.body.appendChild(t); t.focus(); t.select();
+            try { document.execCommand('copy'); showCopied(btn); } catch(e){}
+            document.body.removeChild(t);
+        }
+        function showCopied(btn) {
+            const i = btn.innerHTML; btn.innerHTML = '<i class="fas fa-check"></i>'; btn.style.color = '#0f0';
+            setTimeout(() => { btn.innerHTML = i; btn.style.color = ''; }, 1500);
         }
 
-        // --- UTILS ---
-        window.copyToClipboard = function(id) {
-            const text = document.getElementById(id+"_raw").value;
-            navigator.clipboard.writeText(text).then(() => alert("COPIED")).catch(()=>fallbackCopy(text));
-        }
-        function fallbackCopy(text) {
-            const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
-            try { document.execCommand('copy'); alert("COPIED"); } catch (e) {} document.body.removeChild(t);
-        }
-        window.runCode = function(id) {
-            const code = document.getElementById(id+"_raw").value;
+        function openPreview(btn) {
+            const code = btn.closest('.code-wrapper').querySelector('code').innerText;
             document.getElementById('preview-modal').style.display = 'flex';
             const doc = document.getElementById('preview-frame').contentWindow.document;
             doc.open(); doc.write(code); doc.close();
         }
-        window.closePreview = function() { document.getElementById('preview-modal').style.display = 'none'; }
+        function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-        // --- SUPPORT (FIXED) ---
-        async function sendSupportMsg() {
-            const t = document.getElementById('support-text').value.trim();
-            if(!t) return;
-            // Fix: Don't clear box immediately to prevent flicker if user types fast, but here we do for UX
-            const box = document.getElementById('support-msgs');
-            // Add user msg to UI
-            const div = document.createElement('div');
-            div.className = 's-msg user'; div.innerText = t;
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-            
-            document.getElementById('support-text').value = "";
-            
-            await fetch(SERVER_URL+'/api/support/send', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:USER_NAME, message:t})});
-        }
-        
-        async function checkSupportMsgs() {
-            if(!USER_NAME) return;
+        async function toggleLb() {
+            const m = document.getElementById('lb-modal');
+            if(m.style.display == 'flex') { m.style.display='none'; return; }
+            m.style.display = 'flex';
+            if(document.getElementById('sidebar').classList.contains('active')) toggleMenu();
+            const l = document.getElementById('lb-list'); l.innerHTML = "Fetching...";
             try {
-                const res = await fetch(`${SERVER_URL}/api/support/get?user_id=${USER_NAME}`);
-                const msgs = await res.json();
-                const box = document.getElementById('support-msgs');
-                
-                // Only rebuild if count changes (Basic Sync)
-                // For perfect sync, we should compare IDs, but for this scale, length check is fine
-                // Note: 'Admin Online' div is static, so +1
-                if(box.childElementCount !== msgs.length + 1) {
-                     let html = '<div class="s-msg admin">Admin Online.</div>';
-                     msgs.forEach(m => {
-                        let cls = m.sender === 'admin' ? 's-msg admin' : 's-msg user';
-                        html += `<div class="${cls}">${m.text}</div>`;
-                     });
-                     box.innerHTML = html;
-                     box.scrollTop = box.scrollHeight;
-                }
-            } catch(e){}
+                const res = await fetch(API+'/api/leaderboard');
+                const d = await res.json();
+                let html = "";
+                d.forEach((u, i) => {
+                    const vip = i < 3 ? 'vip' : '';
+                    const icon = i==0 ? '👑' : (i==1?'🥈':(i==2?'🥉':''));
+                    const style = i < 3 ? 'color:var(--gold); font-weight:bold;' : 'color:#aaa;';
+                    html += `<div class="lb-item ${vip}" style="display:flex; justify-content:space-between; border-bottom:1px solid #222; padding:10px; ${style}"><span>${icon} #${i+1} ${u.name}</span><span>${u.credits} CR</span></div>`;
+                });
+                l.innerHTML = html;
+            } catch(e) { l.innerHTML = "Error"; }
         }
-
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-        function toggleSupport() { document.getElementById('support-modal').style.display = document.getElementById('support-modal').style.display === 'flex' ? 'none' : 'flex'; toggleMenu(); }
-        function nukeMemory() { if(confirm("Wipe?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
