@@ -274,24 +274,35 @@
     </div>
 
     <script>
-        // *** VERSION CONTROL ***
-        const CURRENT_VERSION = "1.0"; 
+        // *** VERSION MATCH (IMPORTANT) ***
+        const CURRENT_VERSION = "1.1"; // This Matches version.json
         
         const API = "https://shehzadplayz.pythonanywhere.com"; 
         let USER = "", AI = "", CR = 0;
         let HIST = [];
         let IMG = null;
 
-        // Auto Update Logic - FORCE LOGOUT ON UPDATE
+        // Auto Update Logic - SAFE MODE
         function checkForUpdates() {
             fetch('version.json?t=' + new Date().getTime())
                 .then(response => { if (!response.ok) return null; return response.json(); })
                 .then(data => {
                     if (data && data.version && data.version !== CURRENT_VERSION) {
-                        // LOGOUT USER ON VERSION CHANGE
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        window.location.reload(true);
+                        // Check if we already reloaded for this version recently (Loop Protection)
+                        const lastReloadVer = sessionStorage.getItem('reloaded_for_ver');
+                        
+                        if (lastReloadVer !== data.version) {
+                            console.log("New Version Found: " + data.version);
+                            // Clear User Data to force login (Requested)
+                            localStorage.removeItem('sys_user');
+                            localStorage.removeItem('sys_ai');
+                            
+                            // Set flag to prevent loop
+                            sessionStorage.setItem('reloaded_for_ver', data.version);
+                            
+                            // Reload
+                            window.location.reload(true);
+                        }
                     }
                 }).catch(err => console.log("Update check failed"));
         }
