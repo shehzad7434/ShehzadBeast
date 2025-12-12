@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- SUPER IMPORTANT: DISABLES ZOOM -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>SHEHZAD SYSTEM V99</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,12 +17,9 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
         
-        /* DISABLE ZOOM GESTURES */
         html, body {
-            touch-action: pan-x pan-y; /* Disables pinch zoom */
-            height: 100dvh; overflow: hidden; 
+            touch-action: pan-x pan-y; height: 100dvh; overflow: hidden; 
             background: var(--bg); color: #fff; font-family: var(--font-code);
-            /* Prevent Pull-to-Refresh */
             overscroll-behavior: none;
         }
 
@@ -81,6 +77,8 @@
             padding: 30px; box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); backdrop-filter: blur(20px);
         }
         .card-face.back { transform: rotateY(180deg); border-color: rgba(255, 0, 64, 0.4); }
+        .auth-icon { font-size: 3rem; margin-bottom: 20px; color: var(--cyan); filter: drop-shadow(0 0 10px var(--cyan)); }
+        .back .auth-icon { color: var(--red); filter: drop-shadow(0 0 10px var(--red)); }
         .auth-title { font-family: var(--font-head); font-size: 1.8rem; color: #fff; margin-bottom: 25px; letter-spacing: 2px; }
         .auth-inp {
             width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0,0,0,0.5);
@@ -146,6 +144,7 @@
         .action-btn-sm { padding: 4px 8px; border-radius: 3px; font-size: 0.65rem; background: #222; border: 1px solid #444; color: #ccc; }
         pre { margin: 0 !important; padding: 10px !important; overflow-x: auto; background: #000 !important; }
 
+        /* Full Screen Preview */
         #preview-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 99999; display: none; flex-direction: column; }
         .prev-head { height: 50px; flex-shrink: 0; background: #111; border-bottom: 1px solid var(--cyan); display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .prev-close { color: var(--red); font-weight: bold; border: 1px solid var(--red); padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; }
@@ -275,6 +274,7 @@
     </div>
 
     <script>
+        // *** VERSION CONTROL ***
         const CURRENT_VERSION = "1.0"; 
         
         const API = "https://shehzadplayz.pythonanywhere.com"; 
@@ -282,18 +282,15 @@
         let HIST = [];
         let IMG = null;
 
-        // Prevent Pull-to-Refresh via JS as backup
-        document.body.addEventListener('touchmove', function(e) {
-            if (e.touches.length > 1) e.preventDefault(); // Disable pinch
-        }, { passive: false });
-
-        // Auto Update Logic
+        // Auto Update Logic - FORCE LOGOUT ON UPDATE
         function checkForUpdates() {
             fetch('version.json?t=' + new Date().getTime())
                 .then(response => { if (!response.ok) return null; return response.json(); })
                 .then(data => {
                     if (data && data.version && data.version !== CURRENT_VERSION) {
-                        if ('caches' in window) caches.keys().then((names) => { names.forEach(name => caches.delete(name)); });
+                        // LOGOUT USER ON VERSION CHANGE
+                        localStorage.clear();
+                        sessionStorage.clear();
                         window.location.reload(true);
                     }
                 }).catch(err => console.log("Update check failed"));
