@@ -1,5 +1,3 @@
-</body>
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,6 +103,16 @@
     </div>
 
     <script>
+        // ONE TIME RELOAD LOGIC
+        (function() {
+            // Check agar session me reload flag hai
+            if (!sessionStorage.getItem('is_reloaded')) {
+                // Agar nahi hai, to flag set karo aur reload karo
+                sessionStorage.setItem('is_reloaded', 'true');
+                window.location.reload(true); // Force reload from server
+            }
+        })();
+
         // Language Database
         const content = {
             'en': { // Default / English
